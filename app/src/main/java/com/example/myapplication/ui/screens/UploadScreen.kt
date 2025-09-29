@@ -1,5 +1,5 @@
-package com.example.myapplication.screens
-import androidx.activity.compose.LocalActivity
+package com.example.myapplication.ui.screens
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,13 +23,13 @@ import com.example.myapplication.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenCompacata(){
+fun UploadScreen(){
     Scaffold(
         topBar ={
             TopAppBar({Text("pene")} )
         }
-
-    ){ innerPadding ->
+    ){
+        innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -37,19 +37,16 @@ fun HomeScreenCompacata(){
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ){
-            Text(text = "welcome",color = MaterialTheme.colorScheme.primary)
-            Button(onClick = {println("tula")}) {Text("press me...") }
+            Text(text = "No se como Hacer un imagePicker",color = MaterialTheme.colorScheme.primary)
 
-            Image(
-                painter = painterResource(id=R.drawable.logo),
-                contentDescription = "nose",
-                modifier = Modifier.fillMaxWidth().height(150.dp),
-                contentScale = ContentScale.Fit
-            )
+
 
 
         }
+    }
+
+
+
 
     }
 
-}
