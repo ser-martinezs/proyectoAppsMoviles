@@ -61,11 +61,11 @@ fun FuckingAroundScreen(){
             modifier = Modifier.padding(innerPadding).fillMaxSize()
         ){
             Image(
-                painter = painterResource(id=R.drawable.transparentfatty),
+                painter = painterResource(id=R.drawable.uni),
                 contentDescription = "teto",
                 modifier = Modifier.fillMaxSize()
-                    .background(Color(56, 56, 56, 255))
-                    .blur(0.dp,0.dp)
+                    .background(Color(0, 0, 0, 255))
+                    .blur(8.dp,8.dp)
                 ,
 
                 contentScale = ContentScale.Fit
@@ -75,20 +75,19 @@ fun FuckingAroundScreen(){
 
         Column(
             modifier = Modifier.padding(innerPadding).fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(12.dp, alignment = Alignment.Bottom)
-
-
+            verticalArrangement = Arrangement.spacedBy(5.dp, alignment = Alignment.Bottom)
         ){
+            // TODO: actually save picture to device
             Button(onClick = {}, modifier = Modifier.fillMaxWidth()){Text("Guardar Foto")}
+
+            // TODO: actually animate text going up
             Button(
                 onClick = {},
-                modifier = Modifier.background(Color.Transparent).fillMaxWidth(),
+                modifier = Modifier.background(Color.Transparent).fillMaxWidth().size(64.dp),
                 shape = RoundedCornerShape(0),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color.Transparent, // Fondo transparente
-                ),
+                colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent,),
             ) {
-                Text(test_text, style = Typography.bodyLarge, maxLines = 3, color = Color(0xFFFFFFFF))
+                Text(test_text, style = Typography.bodyLarge, color = Color(0xFFFFFFFF))
             }
 
         }
