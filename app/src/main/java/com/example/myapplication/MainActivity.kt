@@ -29,6 +29,7 @@ import androidx.navigation.navArgument
 import com.example.myapplication.navigation.BottomBar
 import com.example.myapplication.navigation.BottomNavItem
 import com.example.myapplication.navigation.Routes
+import com.example.myapplication.ui.screens.FuckingAroundScreen
 import com.example.myapplication.ui.screens.HomeScreen
 import com.example.myapplication.ui.screens.ProfileScreen
 import com.example.myapplication.ui.screens.UploadScreen
@@ -41,7 +42,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                App()
+                FuckingAroundScreen()
+
+                //App()
             }
         }
 
