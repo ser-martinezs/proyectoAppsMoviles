@@ -12,7 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.FilledIconToggleButton
 import androidx.compose.material3.Scaffold
@@ -27,6 +29,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathSegment
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,13 +80,19 @@ fun FuckingAroundScreen(){
 
         ){
             Button(onClick = {}, modifier = Modifier.fillMaxWidth()){Text("Guardar Foto")}
-
+            Button(
+                onClick = {},
+                modifier = Modifier.background(Color.Transparent).fillMaxWidth(),
+                shape = RoundedCornerShape(0),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = Color.Transparent, // Fondo transparente
+                ),
+            ) {
+                Text(test_text, style = Typography.bodyLarge, maxLines = 3, color = Color(0xFFFFFFFF))
+            }
 
         }
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth()) {
-            Text(test_text, style = Typography.bodyLarge, maxLines = 12, color = Color(0xFFFFFFFF))
 
-        }
     }
 
 
