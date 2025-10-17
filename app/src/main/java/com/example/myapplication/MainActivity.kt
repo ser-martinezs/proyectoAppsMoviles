@@ -42,8 +42,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                FuckingAroundScreen()
-
+                App()
             }
         }
 
@@ -65,11 +64,7 @@ fun App(){
         ) {
             composable(Routes.HOME) {
                 Log.println(Log.WARN,"sda",Routes.imageRoute(R.drawable.uni))
-                HomeScreen(
-                    {
-                        navController.navigate(Routes.imageRoute(R.drawable.uni))
-                    }
-                )
+                HomeScreen(navController)
             }
             composable(Routes.PROFILE) {
                 ProfileScreen()
@@ -83,12 +78,7 @@ fun App(){
             ) {
                 backStackEntry ->
                 val id = backStackEntry.arguments?.getInt("id") ?: -1
-                Image(
-                    painter = painterResource(id=id),
-                    contentDescription = "nose",
-                    modifier = Modifier.fillMaxWidth().height(150.dp),
-                    contentScale = ContentScale.Fit
-                )
+                FuckingAroundScreen(id);
 
                 //val vm: MainViewModel = viewModel()
                 //DetailScreen(itemId = id, viewModel = vm, onBack = { navController.popBackStack() })

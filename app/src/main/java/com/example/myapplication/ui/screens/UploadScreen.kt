@@ -24,29 +24,10 @@ import com.example.myapplication.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UploadScreen(){
-    Scaffold(
-        topBar ={
-            TopAppBar({Text("pene")} )
-        }
-    ){
-        innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ){
-            Text(text = "No se como Hacer un imagePicker",color = MaterialTheme.colorScheme.primary)
 
 
 
 
-        }
-    }
 
-
-
-
-    }
+}
 
