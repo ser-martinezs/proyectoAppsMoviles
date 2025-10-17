@@ -1,6 +1,9 @@
 package com.example.myapplication.ui.screens
 
 import android.util.Log
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -38,6 +42,12 @@ import androidx.navigation.compose.NavHost
 import com.example.myapplication.R
 import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.theme.Typography
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 
 
 @Composable
@@ -49,6 +59,10 @@ fun FuckingAroundScreen(){
             "\n" +
             "Don't play him. You won't have fun, and you certainly won't win.\n"
 
+    var descriptionPressed by remember { mutableStateOf(false);}
+    val textScale = animateDpAsState(if (descriptionPressed) 256.dp else 64.dp, animationSpec = tween(500))
+    val blurScale = animateDpAsState(if (descriptionPressed) 8.dp else 0.dp, animationSpec = tween(500))
+    val imageColor = animateColorAsState(if (descriptionPressed) Color(0x404040FF) else Color(0xFFFFFFFF), animationSpec = tween(500))
 
 
     Scaffold(
@@ -58,19 +72,26 @@ fun FuckingAroundScreen(){
     ) { innerPadding ->
 
         Column(
-            modifier = Modifier.padding(innerPadding).fillMaxSize()
+            modifier = Modifier.padding(innerPadding).
+            fillMaxSize()
         ){
             Image(
                 painter = painterResource(id=R.drawable.uni),
                 contentDescription = "teto",
                 modifier = Modifier.fillMaxSize()
                     .background(Color(0, 0, 0, 255))
-                    .blur(8.dp,8.dp)
-                ,
+                    .blur(blurScale.value,blurScale.value),
+                contentScale = ContentScale.Fit,
+                colorFilter = ColorFilter.tint(
+                    imageColor.value,
+                    blendMode = BlendMode.Multiply
 
-                contentScale = ContentScale.Fit
+                )
             )
         }
+
+
+
 
 
         Column(
@@ -82,8 +103,8 @@ fun FuckingAroundScreen(){
 
             // TODO: actually animate text going up
             Button(
-                onClick = {},
-                modifier = Modifier.background(Color.Transparent).fillMaxWidth().size(64.dp),
+                onClick = { descriptionPressed = !descriptionPressed},
+                modifier = Modifier.background(Color.Transparent).fillMaxWidth().size(textScale.value),
                 shape = RoundedCornerShape(0),
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.Transparent,),
             ) {

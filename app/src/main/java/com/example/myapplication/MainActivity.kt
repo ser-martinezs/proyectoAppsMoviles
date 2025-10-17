@@ -44,7 +44,6 @@ class MainActivity : ComponentActivity() {
             MyApplicationTheme {
                 FuckingAroundScreen()
 
-                //App()
             }
         }
 
