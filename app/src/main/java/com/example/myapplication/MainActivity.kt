@@ -1,11 +1,16 @@
 package com.example.myapplication
 
+import android.app.Activity
+import android.app.Application
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,12 +42,16 @@ import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
+
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                App()
+                App(baseContext)
             }
         }
 
@@ -50,7 +59,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun App(){
+fun App(context: Context){
     val navController = rememberNavController()
     val bottomItems = listOf(BottomNavItem.Home,BottomNavItem.Upload,BottomNavItem.Profile)
 
@@ -70,7 +79,7 @@ fun App(){
                 ProfileScreen()
             }
             composable(Routes.UPLOAD) {
-                UploadScreen()
+                UploadScreen(context = context)
             }
             composable(
                 route = Routes.IMAGE,
