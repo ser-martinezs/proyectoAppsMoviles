@@ -33,6 +33,7 @@ import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.screens.FuckingAroundScreen
 import com.example.myapplication.ui.screens.HomeScreen
 import com.example.myapplication.ui.screens.LoadImageScreen
+import com.example.myapplication.ui.screens.PostingScreen
 import com.example.myapplication.ui.screens.ProfileScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 import com.example.myapplication.ui.viewmodel.PostViewModel
@@ -94,44 +95,10 @@ fun App(){
                 route= Routes.POST,
                 arguments = listOf(navArgument("img"){type= NavType.StringType})
             ){
-                postThing(postViewModel)
-                //backStackEntry ->
-                //val rawFileStr : String= Uri.decode(backStackEntry.arguments?.getString("img")) ?: "wh"
-                //val fileId = rawFileStr.filter { !(it=='{' || it=='}') }.toUri()
-                /*
-                var image: Bitmap?= null
-                Log.println(Log.INFO,"image",fileId.toString())
-                image = state.postBitmap
-                //LocalContext.current.contentResolver.openInputStream(fileId).let { inputStream -> image = BitmapFactory.decodeStream(inputStream) }
-
-                if (image != null){
-                    Image(
-                        bitmap= image.asImageBitmap(), null,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit
-                    )
-                }*/
-
-
+                PostingScreen(postViewModel)
             }
 
         }
     }
 
-}
-@Composable
-fun postThing(viewModel: PostViewModel){
-    val state by viewModel.state.collectAsState()
-    var image: Bitmap?= null
-    //Log.println(Log.INFO,"image",fileId.toString())
-    image = state.postBitmap
-    //LocalContext.current.contentResolver.openInputStream(fileId).let { inputStream -> image = BitmapFactory.decodeStream(inputStream) }
-
-    if (image != null){
-        Image(
-            bitmap= image.asImageBitmap(), null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
-        )
-    }
 }

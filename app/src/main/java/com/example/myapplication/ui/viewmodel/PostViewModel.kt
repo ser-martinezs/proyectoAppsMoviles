@@ -48,6 +48,20 @@ class PostViewModel() :ViewModel(){
     }
     fun setBitmap(bitmap: Bitmap?){ _state.update { it.copy(postBitmap = bitmap) } }
 
+    fun setPostTitle(title: String) : Boolean{
+         if (title.length > 32) return false
+        _state.update { it.copy(postTitle = title) }
+        return true
+    }
+
+    fun setPostDescription(desc: String) : Boolean{
+        if (desc.length > 512) return false
+
+        _state.update { it.copy(postDesc = desc) }
+        return true
+    }
+
+
 
 
 

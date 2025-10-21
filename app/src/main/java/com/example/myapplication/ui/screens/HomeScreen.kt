@@ -32,7 +32,6 @@ import com.example.myapplication.R
 import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.theme.Typography
 
-
 @Composable
 fun HomeScreen(navController: NavController) {
 
