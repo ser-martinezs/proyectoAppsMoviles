@@ -11,10 +11,11 @@ import com.example.myapplication.BuildConfig
 import com.example.myapplication.data.repository.ImageRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import java.io.File
 
 data class PostUIState(
-    val TempFiles : MutableSet<Uri> = mutableSetOf(),
+    val tempFiles : Set<Uri> = mutableSetOf(),
     val postBitmap : Bitmap?=null,
     val postTitle : String="",
     val postDesc : String=""
@@ -40,9 +41,15 @@ class PostViewModel() :ViewModel(){
             "${BuildConfig.APPLICATION_ID}.fileprovider",
             tmpFile
         )
-        //if (!isExternal)TempFiles.add(fileUri)
+        val files = state.value.tempFiles.toMutableSet()
+        files.add(fileUri);
+        _state.update { it.copy(tempFiles=files) }
         return fileUri
     }
+    fun setBitmap(bitmap: Bitmap?){ _state.update { it.copy(postBitmap = bitmap) } }
+
+
+
 
 
 
