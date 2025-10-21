@@ -57,7 +57,7 @@ fun PostThingy(imageID : Int, onClick: Function0<Unit>){
             "\n" +
             "Don't play him. You won't have fun, and you certainly won't win.\n"
     Box(
-        modifier = Modifier.fillMaxWidth().padding(0.dp).clickable(onClick = onClick),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick),
     ){
 
         Row(Modifier.fillMaxWidth()) {
