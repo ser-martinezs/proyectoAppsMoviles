@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.BuildConfig
-import com.example.myapplication.data.repository.ImageRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -46,6 +45,7 @@ class PostViewModel() :ViewModel(){
         _state.update { it.copy(tempFiles=files) }
         return fileUri
     }
+
     fun setBitmap(bitmap: Bitmap?){ _state.update { it.copy(postBitmap = bitmap) } }
 
     fun setPostTitle(title: String) : Boolean{
@@ -56,7 +56,6 @@ class PostViewModel() :ViewModel(){
 
     fun setPostDescription(desc: String) : Boolean{
         if (desc.length > 512) return false
-
         _state.update { it.copy(postDesc = desc) }
         return true
     }

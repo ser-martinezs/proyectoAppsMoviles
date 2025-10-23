@@ -32,6 +32,8 @@ import com.example.myapplication.R
 import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.theme.Typography
 
+
+// TODO: somehow get posts from a server and store them in RAM
 @Composable
 fun HomeScreen(navController: NavController) {
 

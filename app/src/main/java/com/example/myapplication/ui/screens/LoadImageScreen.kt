@@ -47,7 +47,6 @@ fun LoadImageScreen(navController: NavController,viewModel: PostViewModel) {
     val state by viewModel.state.collectAsState()
     var imageUri by remember { mutableStateOf<Uri?>(null) }
 
-    //val permissionLauncherCamera = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) {}
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
@@ -59,7 +58,7 @@ fun LoadImageScreen(navController: NavController,viewModel: PostViewModel) {
                         transform.postRotate(90f)
                         val img = BitmapFactory.decodeStream(inputStream)
                         viewModel.setBitmap(Bitmap.createBitmap(img,0,0,img.width,img.height,transform,true))
-                        navController.navigate(Routes.postRoute(uri))
+                        navController.navigate(Routes.POST)
 
                     }
                 }
@@ -73,7 +72,7 @@ fun LoadImageScreen(navController: NavController,viewModel: PostViewModel) {
                 context.contentResolver.openInputStream(uri).let {
                     inputStream ->
                     viewModel.setBitmap(BitmapFactory.decodeStream(inputStream))
-                    navController.navigate(Routes.postRoute(uri))
+                    navController.navigate(Routes.POST)
                 }
             }
         }
@@ -107,6 +106,8 @@ fun LoadImageScreen(navController: NavController,viewModel: PostViewModel) {
     ) {
 
         Button(onClick = { permissionLauncherCamera.launch(Manifest.permission.CAMERA)}) { Text("Sacar Foto") }
+        if (state.postBitmap != null) Button(onClick = {navController.navigate(Routes.POST)}) { Text("Postear Imagen") }
+
         Button(onClick = { permissionLauncherGallery.launch(Manifest.permission.READ_MEDIA_IMAGES)}) { Text("Cargar Foto") }
     }
 

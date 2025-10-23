@@ -35,12 +35,19 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.Typography
+import java.io.FileOutputStream
 
 
-
+// TODO: setup this to use data obtained from a server
+// oh god how am i gonna get images over the internet and save them
+// oh god how will i even do this API in time
+// well, atleast the android design side is mostly done IG
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FuckingAroundScreen(imageID : Int){
+
+
+
     val test_text = "Potemkin is god awful. Just look at the images and say \"it sucks\" to yourself for almost every single thing here and you have Potemkin. Potemkin's normals are horribly slow, he can't dash, he can't infinite despite having a charge, said charge is also sluggish, he lacks any future moves such as F.D.B or Hammerfall to assist him in approaching zoners or pressuring, he's gigantic, and he has twelve frames of prejump (jump startup) which renders him glued to the ground and thus susceptible to all kinds of malarkey in this game such as the near-universal CC infinites.\n" +
             "\n" +
             "None of Potemkin's strengths are real. High damage normals don't matter due to the abundance of infinites in this game. Potemkin Buster has good range and comes out instantly, but the opponent can tech immediately after being hit thus rendering any follow-up pressure impossible. Even then, this begs the question of \"how did Potemkin get close and grab someone in the first place?\". The most practical place to use Buster is defensively, which is splendid since Potemkin will either be opened up instantly or alternatively get zoned all day rendering the strength moot. His super is an almost fullscreen megapunch that's air unblockable, a rare trait in GGML, but he'll never get to use it any way so who cares?\n" +
@@ -83,7 +90,10 @@ fun FuckingAroundScreen(imageID : Int){
         verticalArrangement = Arrangement.spacedBy(5.dp, alignment = Alignment.Bottom)
     ){
         // TODO: actually save picture to device
-        Button(onClick = {}, modifier = Modifier.fillMaxWidth()){Text("Guardar Foto")}
+        Button(onClick = {
+
+
+        }, modifier = Modifier.fillMaxWidth()){Text("Guardar Foto")}
 
         Box(
             modifier = Modifier
