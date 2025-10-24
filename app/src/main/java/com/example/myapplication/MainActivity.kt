@@ -97,7 +97,6 @@ fun App() {
             modifier = androidx.compose.ui.Modifier.padding(innerPadding)
         ) {
             composable(Routes.HOME) {
-                postViewModel.setBitmap(null)
                 HomeScreen(navController)
             }
             composable(
@@ -132,6 +131,7 @@ fun App() {
             ) { backStackEntry ->
                 postViewModel.setBitmap(null)
                 val id = backStackEntry.arguments?.getLong("id") ?: -1
+                imageViewModel.fetchPost(id)
                 FuckingAroundScreen(id,imageViewModel);
 
 

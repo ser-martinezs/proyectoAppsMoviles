@@ -1,6 +1,7 @@
 package com.example.myapplication.data.model
 
 import android.graphics.Bitmap
+import com.example.myapplication.data.service.RetroFitInstance
 
 
 data class Post(
@@ -9,7 +10,10 @@ data class Post(
     val postDescription: String = "",
     val postedBy: User,
     val fileExtension: String = "",
-    val imageLink : String
-)
+){
+    fun getImageURL() : String{
+        return "${RetroFitInstance.IMAGE_LINK}${postID}.${fileExtension}"
+    }
+}
 
 

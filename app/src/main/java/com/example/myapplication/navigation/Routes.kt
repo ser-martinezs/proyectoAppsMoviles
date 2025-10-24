@@ -10,7 +10,7 @@ object Routes {
     const val REGISTER = "register";
     const val PROFILE = "profile"
     const val IMAGE = "image/{id}"
-    fun imageRoute(id: Int) = "image/$id"
+    fun imageRoute(id: Long) = "image/$id"
     fun profileRoute(id: Long) = "profile/{${id}}"
 
 

@@ -14,10 +14,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +38,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.myapplication.R
 import com.example.myapplication.data.model.Post
 import com.example.myapplication.data.service.RetroFitInstance
@@ -67,6 +71,9 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
             )
         }
     }*/
+
+
+
     val post by imageViewModel.state.collectAsState();
     val animationDuration = 200
     var descriptionPressed by remember { mutableStateOf(false );}
@@ -74,9 +81,17 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
     val blurScale = animateDpAsState(if (descriptionPressed) 8.dp else 0.dp, animationSpec = tween(animationDuration))
     val imageColor = animateColorAsState(if (descriptionPressed) Color(0xFF363636) else Color(0xFFFFFFFF), animationSpec = tween(animationDuration))
 
-    if (post == null){
-        imageViewModel.fetchPost(imageID)
 
+
+    if (post == null){
+        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            CircularProgressIndicator(
+                modifier = Modifier.width(64.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        }
+        return
     }
 
 
@@ -85,20 +100,17 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
             .padding(12.dp)
             .fillMaxSize().background(Color.Black)
     ){
-        Text("Test Title", style = Typography.headlineLarge,modifier = Modifier.fillMaxWidth(), color = Color.White)
-        /*Image(
-            painter = painterResource(id= R.drawable.logo),
-            contentDescription = "",
-            modifier = Modifier
-                .fillMaxSize()
-                .blur(blurScale.value, blurScale.value),
+        Text(post!!.postTitle, style = Typography.headlineLarge,modifier = Modifier.fillMaxWidth(), color = Color.White)
+        AsyncImage(
+            model = post?.getImageURL(),
+            placeholder = null,
+            error = painterResource(id = R.drawable.transparentfatty),
+            contentDescription = post?.postDescription,
+            modifier = Modifier.fillMaxSize().blur(blurScale.value, blurScale.value),
             contentScale = ContentScale.Fit,
-            colorFilter = ColorFilter.tint(
-                imageColor.value,
-                blendMode = BlendMode.Multiply
+            colorFilter = ColorFilter.tint(imageColor.value, blendMode = BlendMode.Multiply)
+        )
 
-            )
-        )*/
     }
 
     Column(
@@ -121,7 +133,7 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
                 .padding(8.dp)
                 .clickable(onClick = { descriptionPressed = !descriptionPressed}),
         ) {
-            Text(test_text, style = Typography.bodyLarge, color = Color(0xFFFFFFFF))
+             Text(post!!.postDescription, style = Typography.bodyLarge, color = Color(0xFFFFFFFF))
         }
 
 

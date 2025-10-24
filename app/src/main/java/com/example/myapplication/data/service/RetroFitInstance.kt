@@ -5,7 +5,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
 object RetroFitInstance {
-    private const val SERVER_LOCATION = ""
+    private const val SERVER_LOCATION = "http://10.0.2.2:8080/"
     const val IMAGE_LINK = "${SERVER_LOCATION}images/" // gonna get a proper url soon
 
 

@@ -30,4 +30,8 @@ class PostReadViewModel : ViewModel() {
         }
     }
 
+    fun shittyTempClear(){
+        _state.value = null
+    }
+
 }
