@@ -2,9 +2,7 @@ package com.example.myapplication.ui.viewmodel
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
-import androidx.compose.runtime.mutableStateOf
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
 import com.example.myapplication.BuildConfig
@@ -18,8 +16,6 @@ data class PostUIState(
     val postBitmap : Bitmap?=null,
     val postTitle : String="",
     val postDesc : String=""
-
-
 )
 
 class PostViewModel() :ViewModel(){
@@ -41,7 +37,7 @@ class PostViewModel() :ViewModel(){
             tmpFile
         )
         val files = state.value.tempFiles.toMutableSet()
-        files.add(fileUri);
+        files.add(fileUri)
         _state.update { it.copy(tempFiles=files) }
         return fileUri
     }

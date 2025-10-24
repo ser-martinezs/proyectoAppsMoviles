@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,7 +35,11 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.R
+import com.example.myapplication.data.model.Post
+import com.example.myapplication.data.service.RetroFitInstance
 import com.example.myapplication.ui.theme.Typography
+import com.example.myapplication.ui.viewmodel.PostReadViewModel
 import java.io.FileOutputStream
 
 
@@ -44,22 +49,35 @@ import java.io.FileOutputStream
 // well, atleast the android design side is mostly done IG
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FuckingAroundScreen(imageID : Int){
+fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
 
+    /*
 
+    if (post != null){
+        Column(modifier = Modifier.fillMaxSize()) {
+            Text("${RetroFitInstance.IMAGE_LINK}${post!!.postID}.${post!!.fileExtension}")
+            Text("${post!!.postID}.${post!!.fileExtension}")
 
-    val test_text = "Potemkin is god awful. Just look at the images and say \"it sucks\" to yourself for almost every single thing here and you have Potemkin. Potemkin's normals are horribly slow, he can't dash, he can't infinite despite having a charge, said charge is also sluggish, he lacks any future moves such as F.D.B or Hammerfall to assist him in approaching zoners or pressuring, he's gigantic, and he has twelve frames of prejump (jump startup) which renders him glued to the ground and thus susceptible to all kinds of malarkey in this game such as the near-universal CC infinites.\n" +
-            "\n" +
-            "None of Potemkin's strengths are real. High damage normals don't matter due to the abundance of infinites in this game. Potemkin Buster has good range and comes out instantly, but the opponent can tech immediately after being hit thus rendering any follow-up pressure impossible. Even then, this begs the question of \"how did Potemkin get close and grab someone in the first place?\". The most practical place to use Buster is defensively, which is splendid since Potemkin will either be opened up instantly or alternatively get zoned all day rendering the strength moot. His super is an almost fullscreen megapunch that's air unblockable, a rare trait in GGML, but he'll never get to use it any way so who cares?\n" +
-            "\n" +
-            "Don't play him. You won't have fun, and you certainly won't win.\n"
-
+            AsyncImage(
+                model = "${RetroFitInstance.IMAGE_LINK}${post!!.postID}.${post!!.fileExtension}",
+                placeholder = null,
+                error = painterResource(id = R.drawable.transparentfatty),
+                contentDescription = post!!.postDescription,
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }*/
+    val post by imageViewModel.state.collectAsState();
     val animationDuration = 200
     var descriptionPressed by remember { mutableStateOf(false );}
     val textScale = animateDpAsState(if (descriptionPressed) 256.dp else 64.dp, animationSpec = tween(animationDuration))
     val blurScale = animateDpAsState(if (descriptionPressed) 8.dp else 0.dp, animationSpec = tween(animationDuration))
     val imageColor = animateColorAsState(if (descriptionPressed) Color(0xFF363636) else Color(0xFFFFFFFF), animationSpec = tween(animationDuration))
 
+    if (post == null){
+        imageViewModel.fetchPost(imageID)
+
+    }
 
 
     Column(
@@ -68,8 +86,8 @@ fun FuckingAroundScreen(imageID : Int){
             .fillMaxSize().background(Color.Black)
     ){
         Text("Test Title", style = Typography.headlineLarge,modifier = Modifier.fillMaxWidth(), color = Color.White)
-        Image(
-            painter = painterResource(id=imageID),
+        /*Image(
+            painter = painterResource(id= R.drawable.logo),
             contentDescription = "",
             modifier = Modifier
                 .fillMaxSize()
@@ -80,7 +98,7 @@ fun FuckingAroundScreen(imageID : Int){
                 blendMode = BlendMode.Multiply
 
             )
-        )
+        )*/
     }
 
     Column(

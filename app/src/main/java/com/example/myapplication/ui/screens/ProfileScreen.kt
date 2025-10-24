@@ -11,9 +11,7 @@ import com.example.myapplication.comoponents.LoginResquestMessage
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(navController: NavController){
-
     LoginResquestMessage(navController)
-
 }
 
 @Preview(showBackground = true, showSystemUi = true)

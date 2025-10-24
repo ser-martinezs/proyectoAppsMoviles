@@ -38,12 +38,14 @@ import com.example.myapplication.ui.theme.Typography
 fun HomeScreen(navController: NavController) {
 
     Column(modifier = Modifier.fillMaxSize().padding(8.dp).verticalScroll(rememberScrollState())) {
+        var k = 0
         for (j in 0..2)
         {
             for (i in listOf(R.drawable.uni, R.drawable.transparentfatty, R.drawable.logo)) {
                 PostThingy(i,onClick={
-                    navController.navigate(Routes.imageRoute(i))
+                    navController.navigate(Routes.imageRoute(k))
                 })
+                k = (k+1)%5
             }
 
         }

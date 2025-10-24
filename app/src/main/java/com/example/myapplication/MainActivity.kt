@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,6 +53,15 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
+import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewModelScope
+import coil.compose.AsyncImage
+import com.example.myapplication.comoponents.LoginResquestMessage
+import com.example.myapplication.data.model.Post
+import com.example.myapplication.ui.viewmodel.PostReadViewModel
+import kotlinx.coroutines.launch
+
 class MainActivity : ComponentActivity() {
 
 
@@ -62,44 +72,21 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MyApplicationTheme {
-                ApiCallTest()
-
-
-
-            //App()
+                App()
             }
         }
 
     }
 }
-@Composable
-fun ApiCallTest(){
-    var funny_response by remember { mutableStateOf<String>("what the fuck???") }
-
-    Column(modifier = Modifier.fillMaxSize()){
-        Text(funny_response)
-        Button(onClick = {
-            try {
-                var resp =  RetroFitInstance.userApi.testCall()
-                // Hacer algo con el post obtenido
-                funny_response=resp.toString()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                // Manejo de los errores del servidor
-            }
-
-        }) {Text("call the api.") }
-    }
-
-}
 
 
 @Composable
-fun App(){
+fun App() {
 
-    val postViewModel : PostViewModel = viewModel()
+    val postViewModel: PostViewModel = viewModel()
+    val imageViewModel : PostReadViewModel = viewModel()
     val navController = rememberNavController()
-    val bottomItems = listOf(BottomNavItem.Home,BottomNavItem.Upload,BottomNavItem.Profile)
+    val bottomItems = listOf(BottomNavItem.Home, BottomNavItem.Upload, BottomNavItem.Profile)
 
     Scaffold(
         bottomBar = { BottomBar(navController, bottomItems) }
@@ -114,13 +101,12 @@ fun App(){
                 HomeScreen(navController)
             }
             composable(
-                route=Routes.PROFILE,
-                arguments = listOf(navArgument("id"){nullable=true})
-            ) {
-                backStackEntry ->
+                route = Routes.PROFILE,
+                arguments = listOf(navArgument("id") { nullable = true })
+            ) { backStackEntry ->
                 postViewModel.setBitmap(null)
-                val profileID : Long?= (backStackEntry.arguments?.getString("id"))?.toLong()
-                if (profileID == null){
+                val profileID: Long? = (backStackEntry.arguments?.getString("id"))?.toLong()
+                if (profileID == null) {
                     /*
                     TODO: change to current logged used ID
                     If no user is logged then thell them to log in
@@ -128,36 +114,36 @@ fun App(){
                 }
 
                 Text("$profileID")
-                ProfileScreen()
+                ProfileScreen(navController)
             }
             composable(Routes.UPLOAD) {
                 // TODO: make this check be something that tells us "hey is there someone logged in"
                 if (false) {
-                    LoginScreen(navController)
+                    LoginResquestMessage(navController)
                     return@composable
                 }
 
-                LoadImageScreen(navController,postViewModel)
+                LoadImageScreen(navController, postViewModel)
             }
 
             composable(
                 route = Routes.IMAGE,
-                arguments = listOf(navArgument("id") { type = NavType.IntType })
-            ) {
-                backStackEntry ->
+                arguments = listOf(navArgument("id") { type = NavType.LongType })
+            ) { backStackEntry ->
                 postViewModel.setBitmap(null)
-                val id = backStackEntry.arguments?.getInt("id") ?: -1
-                // TODO: validation for invalid posts
-                FuckingAroundScreen(id);
+                val id = backStackEntry.arguments?.getLong("id") ?: -1
+                FuckingAroundScreen(id,imageViewModel);
+
+
             }
-            composable(route= Routes.POST){
+            composable(route = Routes.POST) {
                 PostingScreen(postViewModel)
             }
-            composable(Routes.LOGIN){
+            composable(Routes.LOGIN) {
                 postViewModel.setBitmap(null)
                 LoginScreen(navController)
             }
-            composable(Routes.REGISTER){
+            composable(Routes.REGISTER) {
                 postViewModel.setBitmap(null)
                 RegisterScreen(navController)
             }

@@ -12,12 +12,10 @@ import retrofit2.http.Path
 interface UserRepository {
 
     @PUT("/login")
-    fun login(@Body credentials: String) : Response<User>
+    fun login(@Body credentials: User) : Response<User>
     @POST("/register")
-    fun register(@Body newUser: String) : Response<User>
+    fun register(@Body newUser: User) : Response<User>
     @GET("/{id}")
     fun getByUserID(@Path("id") userID: Long) : Response<User>
 
-    @GET("/testcall")
-    fun testCall() : Response<String>
 }
