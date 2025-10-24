@@ -97,7 +97,9 @@ fun App() {
             modifier = androidx.compose.ui.Modifier.padding(innerPadding)
         ) {
             composable(Routes.HOME) {
-                HomeScreen(navController)
+
+                imageViewModel.fetchPage()
+                HomeScreen(navController,imageViewModel)
             }
             composable(
                 route = Routes.PROFILE,

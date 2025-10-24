@@ -19,7 +19,7 @@ interface PostRepository {
     @GET("/api/v1/posts/{id}")
     suspend fun getByPostID(@Path("id") postID: Long) : Response<Post>
 
-    @GET("/api/v1/page/{pageNumber}")
+    @GET("/api/v1/posts/page/{pageNumber}")
     suspend fun getByPage(@Path("pageNumber") pageNumber: Int) : Response<List<Post>>
 
     @GET("/api/v1/user/{userID}")

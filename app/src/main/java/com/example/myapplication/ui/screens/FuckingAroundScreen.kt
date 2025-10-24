@@ -74,7 +74,7 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
 
 
 
-    val post by imageViewModel.state.collectAsState();
+    val state by imageViewModel.state.collectAsState();
     val animationDuration = 200
     var descriptionPressed by remember { mutableStateOf(false );}
     val textScale = animateDpAsState(if (descriptionPressed) 256.dp else 64.dp, animationSpec = tween(animationDuration))
@@ -82,8 +82,8 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
     val imageColor = animateColorAsState(if (descriptionPressed) Color(0xFF363636) else Color(0xFFFFFFFF), animationSpec = tween(animationDuration))
 
 
-
-    if (post == null){
+    // display error later
+    if (state.post == null){
         Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
             CircularProgressIndicator(
                 modifier = Modifier.width(64.dp),
@@ -100,12 +100,12 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
             .padding(12.dp)
             .fillMaxSize().background(Color.Black)
     ){
-        Text(post!!.postTitle, style = Typography.headlineLarge,modifier = Modifier.fillMaxWidth(), color = Color.White)
+        Text(state.post!!.postTitle, style = Typography.headlineLarge,modifier = Modifier.fillMaxWidth(), color = Color.White)
         AsyncImage(
-            model = post?.getImageURL(),
+            model = state.post?.getImageURL(),
             placeholder = null,
             error = painterResource(id = R.drawable.transparentfatty),
-            contentDescription = post?.postDescription,
+            contentDescription = state.post?.postDescription,
             modifier = Modifier.fillMaxSize().blur(blurScale.value, blurScale.value),
             contentScale = ContentScale.Fit,
             colorFilter = ColorFilter.tint(imageColor.value, blendMode = BlendMode.Multiply)
@@ -133,7 +133,7 @@ fun FuckingAroundScreen(imageID : Long, imageViewModel: PostReadViewModel){
                 .padding(8.dp)
                 .clickable(onClick = { descriptionPressed = !descriptionPressed}),
         ) {
-             Text(post!!.postDescription, style = Typography.bodyLarge, color = Color(0xFFFFFFFF))
+             Text(state.post!!.postDescription, style = Typography.bodyLarge, color = Color(0xFFFFFFFF))
         }
 
 
