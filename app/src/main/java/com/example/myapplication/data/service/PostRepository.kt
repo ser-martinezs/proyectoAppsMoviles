@@ -22,12 +22,12 @@ interface PostRepository {
     @GET("/api/v1/posts/page/{pageNumber}")
     suspend fun getByPage(@Path("pageNumber") pageNumber: Int) : Response<List<Post>>
 
-    @GET("/api/v1/user/{userID}")
-    suspend fun getUserPostsByPage(@Path("userID") userID:Long, @Query("page") page:Int) : Response<List<Post>>
+    @GET("/api/v1/posts/user/{userID}")
+    suspend fun getUserPostsByPage(@Path("userID") userID:Long, @Query("pageNumber") page:Int) : Response<List<Post>>
 
-    @POST("/api/v1/upload")
+    @POST("/api/v1/posts/upload")
     @Multipart
-    suspend fun uploadPost(@Part image : MultipartBody.Part, @Part post: Post) : Response<Post>
+    suspend fun uploadPost(@Part image : MultipartBody.Part, @Part("postData") post: Post) : Response<String>
 
 
 }

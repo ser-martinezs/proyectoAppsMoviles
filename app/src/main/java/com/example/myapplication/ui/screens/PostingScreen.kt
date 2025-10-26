@@ -22,20 +22,15 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.myapplication.data.model.Post
+import com.example.myapplication.data.model.User
 import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.theme.Typography
 import com.example.myapplication.ui.viewmodel.PostViewModel
 
 
 @Composable
-fun PostingScreen(viewModel: PostViewModel){
-
-
-
-    val test_text = "Potemkin is god awful. Just look at the images and say \"it sucks\" to yourself for almost every single thing here and you have Potemkin. Potemkin's normals are horribly slow, he can't dash, he can't infinite despite having a charge, said charge is also sluggish, he lacks any future moves such as F.D.B or Hammerfall to assist him in approaching zoners or pressuring, he's gigantic, and he has twelve frames of prejump (jump startup) which renders him glued to the ground and thus susceptible to all kinds of malarkey in this game such as the near-universal CC infinitesinfinites"
-
-
-
+fun PostingScreen(viewModel: PostViewModel,curUser: User){
 
     val state by viewModel.state.collectAsState()
     val image: Bitmap?= state.postBitmap
@@ -51,7 +46,7 @@ fun PostingScreen(viewModel: PostViewModel){
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = Typography.headlineLarge,
                 label = {Text("Titlo del Post")},
-                isError = state.postTitle.isEmpty()
+                isError = state.postTitle.isEmpty(),
             )
         },
         bottomBar = {
@@ -66,8 +61,7 @@ fun PostingScreen(viewModel: PostViewModel){
 
                 // TODO: actually post the image
                 Button(onClick = {
-
-
+                    viewModel.postImage(Post(postedBy = curUser, postID =-1, postTitle = state.postTitle, postDescription = state.postDesc))
                 }, enabled = !errors, modifier = Modifier.fillMaxWidth()) {Text("Subir Post")}
             }
         }

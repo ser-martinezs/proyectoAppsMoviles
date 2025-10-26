@@ -5,14 +5,24 @@ import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.myapplication.BuildConfig
+import com.example.myapplication.data.model.Post
+import com.example.myapplication.data.model.User
+import com.example.myapplication.data.service.RetroFitInstance
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.Exception
 
 data class PostUIState(
-    val tempFiles : Set<Uri> = mutableSetOf(),
+    val tempFile : Uri = Uri.EMPTY,
     val postBitmap : Bitmap?=null,
     val postTitle : String="",
     val postDesc : String=""
@@ -36,13 +46,23 @@ class PostViewModel() :ViewModel(){
             "${BuildConfig.APPLICATION_ID}.fileprovider",
             tmpFile
         )
-        val files = state.value.tempFiles.toMutableSet()
-        files.add(fileUri)
-        _state.update { it.copy(tempFiles=files) }
+
+        _state.update { it.copy(tempFile=fileUri) }
         return fileUri
     }
 
     fun setBitmap(bitmap: Bitmap?){ _state.update { it.copy(postBitmap = bitmap) } }
+
+    fun cleanupPost(){
+        setBitmap(null)
+        if (_state.value.tempFile == Uri.EMPTY) return
+        val file = File(_state.value.tempFile.path!!)
+        file.delete()
+
+        _state.update { it.copy(tempFile = Uri.EMPTY) }
+
+
+    }
 
     fun setPostTitle(title: String) : Boolean{
          if (title.length > 32) return false
@@ -56,7 +76,28 @@ class PostViewModel() :ViewModel(){
         return true
     }
 
+    fun postImage(postData: Post){
+        viewModelScope.launch {
+            val postImage = _state.value.postBitmap
+            if (postImage == null) return@launch
+            val bitmapStream = ByteArrayOutputStream()
+            try {
+                postImage.compress(Bitmap.CompressFormat.WEBP_LOSSLESS,0,bitmapStream)
+            } catch (e: Exception){}
 
+            val reqBody = bitmapStream.toByteArray().toRequestBody("image/webp".toMediaTypeOrNull())
+            val imageFile: MultipartBody.Part = MultipartBody.Part.createFormData("file", "thisisgettingoverridenanywaysright", reqBody)
+
+            val res = RetroFitInstance.postApi.uploadPost(imageFile, postData )
+
+            bitmapStream.close()
+        //bm.compress()
+
+
+        }
+
+
+    }
 
 
 

@@ -14,7 +14,7 @@ import androidx.navigation.compose.*
 sealed class BottomNavItem(val route: String, val label: String, val icon: androidx.compose.ui.graphics.vector.ImageVector) {
     object Home : BottomNavItem(Routes.HOME, "Home", Icons.Default.Home)
     object Upload : BottomNavItem(Routes.UPLOAD, "Subir", Icons.Default.AddCircle)
-    object Profile : BottomNavItem(Routes.PROFILE, "Perfil", Icons.Default.Person)
+    object Profile : BottomNavItem(Routes.USER_PROFILE, "Perfil", Icons.Default.Person)
 
 
 }

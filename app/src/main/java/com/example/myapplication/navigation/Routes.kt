@@ -8,10 +8,12 @@ object Routes {
     const val POST = "post";
     const val LOGIN = "login";
     const val REGISTER = "register";
-    const val PROFILE = "profile"
+
+    const val USER_PROFILE = "profile/"
+    const val PROFILE = "profile/{id}"
     const val IMAGE = "image/{id}"
     fun imageRoute(id: Long) = "image/$id"
-    fun profileRoute(id: Long) = "profile/{${id}}"
+    fun profileRoute(id: Long) = "profile/${id}"
 
 
 }
