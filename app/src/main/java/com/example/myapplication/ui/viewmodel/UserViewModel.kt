@@ -3,6 +3,7 @@ package com.example.myapplication.ui.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.data.model.User
 import com.example.myapplication.data.service.RetroFitInstance
 import kotlinx.coroutines.async
@@ -13,7 +14,7 @@ import kotlinx.coroutines.launch
 
 data class UserViewModelState(
     val user: User? = null,
-    var responseCode : Int = -1
+    var responseCode : Int = CodeConsts.NOTHING // both use the same because you aren't logging and registering at once
 )
 
 class UserViewModel : ViewModel() {
@@ -23,35 +24,42 @@ class UserViewModel : ViewModel() {
 
 
     fun tryLogin(credentials: User){
-        viewModelScope.launch {
-            try {
-                val resp = async { RetroFitInstance.userApi.login(credentials) }.await()
-                Log.println(Log.INFO,"user login",resp.code().toString())
-                Log.println(Log.INFO,"user login",resp.body().toString())
-                _state.update { it.copy(user = resp.body()) }
-            }
-            catch (e: Exception){
-                e.printStackTrace()
-                _state.update { it.copy(user = null) }
 
+        viewModelScope.launch {
+            _state.update { it.copy(user=null,CodeConsts.LOADING) }
+            val safecall = async { runCatching { RetroFitInstance.userApi.login(credentials) } }.await()
+
+
+            if (!safecall.isSuccess) {
+                _state.update { it.copy(responseCode = CodeConsts.CONNECTION_ERROR) }
+                return@launch
             }
+
+            val response = safecall.getOrNull()
+
+            _state.update { it.copy(user = response!!.body(), responseCode = response.code()) }
+
         }
     }
 
     fun tryRegister(credentials: User){
         viewModelScope.launch {
-            try {
-                val resp = async { RetroFitInstance.userApi.register(credentials) }.await()
-                Log.println(Log.INFO,"user register",resp.code().toString())
-                Log.println(Log.INFO,"user register",resp.body().toString())
-                _state.update { it.copy(user = resp.body()) }
-            }
-            catch (e: Exception){
-                e.printStackTrace()
-                _state.update { it.copy(user = null) }
+            _state.update { it.copy(user=null,CodeConsts.LOADING) }
+            val safecall = async { runCatching { RetroFitInstance.userApi.register(credentials) } }.await()
 
+
+            if (!safecall.isSuccess) {
+                _state.update { it.copy(responseCode = CodeConsts.CONNECTION_ERROR) }
+                return@launch
             }
+
+            val response = safecall.getOrNull()
+
+            _state.update { it.copy(user = response!!.body(), responseCode = response.code()) }
+
         }
+
     }
+    fun resetState(){_state.update { it.copy(responseCode = CodeConsts.NOTHING) }}
 
 }

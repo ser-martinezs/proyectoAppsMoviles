@@ -20,7 +20,7 @@ sealed class BottomNavItem(val route: String, val label: String, val icon: andro
 }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomBar(navController: NavHostController, items: List<BottomNavItem>) {
+fun BottomBar(navController: NavHostController, items: List<BottomNavItem>,onExited: (oldRoute: String,newRoute: String) -> Unit) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -32,6 +32,7 @@ fun BottomBar(navController: NavHostController, items: List<BottomNavItem>) {
                 selected = currentRoute == item.route,
                 onClick = {
                     if (currentRoute != item.route) {
+                        onExited(currentRoute?:"",item.route)
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.startDestinationRoute ?: Routes.HOME) {
                                 saveState = true

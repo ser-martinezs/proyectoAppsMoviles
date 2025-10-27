@@ -31,35 +31,46 @@ class ProfileViewModel : ViewModel(){
     val state : StateFlow<ProfileState> = _state
 
     fun loadUser(userID: Long){
+        if (userID == _state.value.user?.userID) return
+
         viewModelScope.launch {
-            _state.update { it.copy(responses = ProfileResponseCodes(userResponse = CodeConsts.LOADING, pageResponse = it.responses.pageResponse)) }
+            _state.update { it.copy(
+                responses = ProfileResponseCodes(userResponse = CodeConsts.LOADING, pageResponse = it.responses.pageResponse),
+                page = it.page, posts = it.posts
+            ) }
+
 
             val safecall = async { runCatching { RetroFitInstance.userApi.getByUserID(userID) } }.await()
 
             if (!safecall.isSuccess) {
-                _state.update { it.copy( user = null, responses = ProfileResponseCodes(userResponse = CodeConsts.CONNECTION_ERROR), posts = listOf() ) }
+                _state.update { it.copy( responses = ProfileResponseCodes(userResponse = CodeConsts.CONNECTION_ERROR)) }
                 return@launch
             }
 
             val response = safecall.getOrNull()
-            _state.update { it.copy( user = response!!.body(), responses = ProfileResponseCodes(userResponse = response.code(),pageResponse = it.responses.pageResponse) ) }
-            loadUserPosts(userID, pageNumber = _state.value.page)
+            _state.update { it.copy( user = response!!.body(),
+                responses = ProfileResponseCodes(userResponse = response.code(),pageResponse = it.responses.pageResponse),
+                page = it.page, posts = it.posts
+            ) }
+
+
         }
     }
 
     fun loadUserPosts(userID: Long, pageNumber: Int){
+
         viewModelScope.launch {
-            _state.update { it.copy(responses = ProfileResponseCodes(pageResponse = CodeConsts.LOADING, userResponse = it.responses.userResponse)) }
+            _state.update { it.copy(responses = ProfileResponseCodes(pageResponse = CodeConsts.LOADING, userResponse = it.responses.userResponse), user = it.user) }
 
             val safecall = async { runCatching { RetroFitInstance.postApi.getUserPostsByPage(userID,pageNumber) } }.await()
 
             if (!safecall.isSuccess) {
-                _state.update { it.copy( responses = ProfileResponseCodes(pageResponse = CodeConsts.CONNECTION_ERROR), posts = listOf() ) }
+                _state.update { it.copy( responses = ProfileResponseCodes(pageResponse = CodeConsts.CONNECTION_ERROR)) }
                 return@launch
             }
 
             val response = safecall.getOrNull()
-            _state.update { it.copy( posts = (response!!.body() ?: listOf()), responses = ProfileResponseCodes(pageResponse = response.code(), userResponse = it.responses.userResponse) ) }
+            _state.update { it.copy( posts = (response!!.body() ?: listOf()), responses = ProfileResponseCodes(pageResponse = response.code(), userResponse = it.responses.userResponse),user = it.user ) }
         }
 
 

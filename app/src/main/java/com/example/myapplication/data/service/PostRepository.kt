@@ -1,14 +1,11 @@
 package com.example.myapplication.data.service
 
 import com.example.myapplication.data.model.Post
-import com.example.myapplication.data.model.User
 import okhttp3.MultipartBody
 import retrofit2.Response
-import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
-import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -29,5 +26,10 @@ interface PostRepository {
     @Multipart
     suspend fun uploadPost(@Part image : MultipartBody.Part, @Part("postData") post: Post) : Response<String>
 
+    @GET("/api/v1/posts/pagecount/{userID}")
+    suspend fun getUserPages(@Path("userID") userID: Long?): Response<Int>
+
+    @GET("/api/v1/posts/pagecount")
+    suspend fun getOverallPages(): Response<Int>
 
 }

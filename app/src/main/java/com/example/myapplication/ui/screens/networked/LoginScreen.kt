@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.screens.networked
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,21 +29,47 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.myapplication.components.ErrorDialog
+import com.example.myapplication.components.FullScreenLoading
+import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.data.model.User
 import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.theme.Typography
 import com.example.myapplication.ui.viewmodel.UserViewModel
+import java.util.regex.Pattern
 
 @Composable
 fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val state by viewmodel.state.collectAsState()
+    val emailRegex = "[a-z0-9]+[_a-z0-9\\.-]*[a-z0-9]+@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})"
+    val pattern: Pattern = Pattern.compile(emailRegex, Pattern.CASE_INSENSITIVE)
 
-    if (state.user != null) {
+    Log.println(Log.INFO,"shit crap fuck shit","${state.responseCode}}")
+
+    if (state.responseCode == CodeConsts.LOADING){
+        FullScreenLoading()
+        return
+    }
+    if (state.responseCode == 400 || state.responseCode == 500){
+        ErrorDialog({viewmodel.resetState()},"Hubo un problema para iniciar sesion")
+        return
+    }
+    if (state.responseCode == CodeConsts.CONNECTION_ERROR){
+        ErrorDialog({viewmodel.resetState()},"Hubo un problema para conectarse con el servidor")
+        return
+    }
+    if (state.responseCode == 401){
+        ErrorDialog({viewmodel.resetState()},"Credenciales incorrectas.")
+        return
+    }
+
+    if (state.responseCode == 200) {
         navController.popBackStack()
         return
     }
+
 
     val registerString = buildAnnotatedString {
         append("No tienes una cuenta?")
@@ -59,14 +86,20 @@ fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
         }
     }
 
+    var emailError = !(email.isNotBlank()  && pattern.matcher(email).matches())
+
     Column(modifier = Modifier.fillMaxSize().padding(24.dp), verticalArrangement = Arrangement.Center) {
         OutlinedTextField(
             value=email,
-            onValueChange = {email=it},
+            onValueChange = {
+                if (it.length < 255) {email=it}
+                emailError = !(email.isNotBlank()  && pattern.matcher(email).matches())
+            },
             modifier = Modifier.fillMaxWidth(),
             textStyle = Typography.headlineMedium,
             label = {Text("Correo Electonico")},
-            isError = !email.isNotBlank()
+            isError = emailError,
+            supportingText = {Text(if (emailError) CodeConsts.INVALID_EMAIL else "")}
 
         )
         OutlinedTextField(
@@ -77,9 +110,10 @@ fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
             label = {Text("Contraseña")},
             isError = !password.isNotBlank(),
             keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Unspecified, autoCorrectEnabled = false,
-                imeAction = ImeAction.Unspecified
+                imeAction = ImeAction.Unspecified, keyboardType = KeyboardType.Password
             ),
-            visualTransformation = PasswordVisualTransformation()
+            visualTransformation = PasswordVisualTransformation(),
+            supportingText = {Text(if (!password.isNotBlank()) CodeConsts.INVALID_PASSWORD else "")},
         )
 
         Button(
@@ -87,7 +121,7 @@ fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
                 viewmodel.tryLogin(User(userID = 0, email=email, passwordHash = password, userName = ""))
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = (password.isNotBlank() && email.isNotBlank())
+            enabled = (password.isNotBlank() && !emailError)
         ) {Text("Iniciar Sesion")}
         Text(registerString)
     }

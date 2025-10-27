@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myapplication.components.FullScreenLoading
 import com.example.myapplication.components.FullScreenNetError
+import com.example.myapplication.components.PageButtons
 import com.example.myapplication.components.PostContainer
 import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.ui.theme.Typography
@@ -22,8 +23,9 @@ import com.example.myapplication.ui.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController,viewModel: ProfileViewModel){
+fun ProfileScreen(navController: NavController,viewModel: ProfileViewModel,userID: Long){
     val state by viewModel.state.collectAsState()
+    viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
 
     if (state.responses.userResponse == CodeConsts.LOADING || state.responses.userResponse== CodeConsts.LOADING){
         FullScreenLoading()
@@ -38,7 +40,7 @@ fun ProfileScreen(navController: NavController,viewModel: ProfileViewModel){
 
     Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
         Text("Posts por ${state.user!!.userName}:", style = Typography.headlineLarge)
-        PostContainer(navController,state.posts)
+        PostContainer(navController,state.posts,0,0,{})
     }
 
 

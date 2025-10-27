@@ -1,10 +1,12 @@
 package com.example.myapplication.ui.screens.networked
 
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +18,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,6 +35,7 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -41,9 +46,12 @@ import com.example.myapplication.R
 import com.example.myapplication.components.FullScreenLoading
 import com.example.myapplication.components.FullScreenNetError
 import com.example.myapplication.data.CodeConsts
+import com.example.myapplication.data.model.Post
+import com.example.myapplication.data.model.User
 import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.theme.Typography
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
+import com.example.myapplication.ui.viewmodel.PostViewModel
 
 
 // TODO: setup this to use data obtained from a server
@@ -61,9 +69,10 @@ fun PostDisplayScreen(imageID : Long, imageViewModel: PostReadViewModel, navCont
     val blurScale = animateDpAsState(if (descriptionPressed) 8.dp else 0.dp, animationSpec = tween(animationDuration))
     val imageColor = animateColorAsState(if (descriptionPressed) Color(0xFF363636) else Color(0xFFFFFFFF), animationSpec = tween(animationDuration))
 
-    imageViewModel.fetchPost(postID = imageID)
+    if (state.postID == null || state.postID != imageID){
+        imageViewModel.fetchPost(postID = imageID)
+    }
 
-    Log.println(Log.INFO,"PostDisplayScreen ik","${state.errors.postCode} ${state.post} ${state.postID},${imageID}")
 
     when (state.errors.postCode){
         CodeConsts.NOTHING -> {
@@ -95,6 +104,7 @@ fun PostDisplayScreen(imageID : Long, imageViewModel: PostReadViewModel, navCont
 
 
         Text(state.post!!.postTitle, style = Typography.headlineLarge,modifier = Modifier.fillMaxWidth(), color = Color.White)
+
         AsyncImage(
             model = state.post?.getImageURL(),
             placeholder = null,

@@ -37,7 +37,5 @@ object RetroFitInstance {
         create(PostRepository::class.java)
     }
 
-    fun buildClient(){
-    }
 
 }

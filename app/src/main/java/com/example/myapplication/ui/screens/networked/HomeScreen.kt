@@ -16,16 +16,13 @@ import com.example.myapplication.ui.viewmodel.PostReadViewModel
 // TODO: somehow get posts from a server and store them in RAM
 @Composable
 fun HomeScreen(navController: NavController,imageViewModel: PostReadViewModel) {
-
-
     val state by imageViewModel.state.collectAsState()
 
+
     imageViewModel.fetchPage(state.pageNumber)
-    /*if (state.errors.pageCode == CodeConsts.NOTHING){
-    }*/
 
 
-
+    Log.println(Log.INFO,"idk",state.pageCount.toString())
     if (state.errors.pageCode == CodeConsts.LOADING){
         FullScreenLoading()
         return
@@ -36,6 +33,7 @@ fun HomeScreen(navController: NavController,imageViewModel: PostReadViewModel) {
     }
     if (state.errors.pageCode != 200) return
 
-    PostContainer(navController,state.page)
+    PostContainer(navController,state.page,state.pageNumber,state.pageCount,{imageViewModel.setPage(it)})
+
 }
 

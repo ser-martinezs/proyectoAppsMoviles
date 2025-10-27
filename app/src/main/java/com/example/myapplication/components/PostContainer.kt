@@ -16,22 +16,13 @@ import com.example.myapplication.data.model.User
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 
 @Composable
-fun PostContainer(navController: NavController,posts:List<Post>) {
+fun PostContainer(navController: NavController,posts:List<Post>,curPage: Int,maxPage:Int,onPageChanged:(Int)-> Unit) {
 
     Column(modifier = Modifier.fillMaxSize().padding(8.dp).verticalScroll(rememberScrollState())) {
         for (post in posts) PostThingy(post,navController)
+
+        //PageButtons(maxPage,curPage,onPageChanged)
     }
 
 }
 
-/*
-
-
-fun HomeScreen(navController: NavController,imageViewModel: PostReadViewModel) {
-
-
-}
-
-
-
- */

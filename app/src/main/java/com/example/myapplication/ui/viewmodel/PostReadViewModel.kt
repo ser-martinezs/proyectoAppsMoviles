@@ -26,8 +26,9 @@ data class IdkWhatToNameState(
     val page : List<Post> = listOf(),
     val errors : idkWhatToReadErrors= idkWhatToReadErrors(),
     val pageNumber: Int=0,
-    val postID : Long?= null
-    )
+    val postID : Long?= null,
+    val pageCount : Int= 0
+)
 
 
 class PostReadViewModel : ViewModel() {
@@ -35,48 +36,70 @@ class PostReadViewModel : ViewModel() {
     val state : StateFlow<IdkWhatToNameState> = _state
 
     fun fetchPost(postID: Long){
-        // avoid reload spam
-        //if (_state.value.errors.pageCode == CodeConsts.LOADING && _state.value.postID == postID) return
 
         viewModelScope.launch {
-            _state.update{it.copy(errors= idkWhatToReadErrors(postCode = CodeConsts.LOADING),postID=postID)}
+            _state.update{it.copy(
+                errors= idkWhatToReadErrors(postCode = CodeConsts.LOADING, pageCode = it.errors.pageCode),
+                postID=postID, pageNumber = it.pageNumber, page = it.page
+            )}
+
 
             val safecall = async { runCatching { RetroFitInstance.postApi.getByPostID(postID) } }.await()
 
             if (!safecall.isSuccess) {
-                _state.update { it.copy( post = null, errors = idkWhatToReadErrors(postCode = CodeConsts.CONNECTION_ERROR),postID=null ) }
+                _state.update { it.copy(
+                    errors = idkWhatToReadErrors(postCode = CodeConsts.CONNECTION_ERROR,pageCode = it.errors.pageCode),
+                    pageNumber = it.pageNumber, page = it.page
+                )}
                 return@launch
             }
             val response = safecall.getOrNull()
-            _state.update { it.copy( post=response!!.body(), errors = idkWhatToReadErrors(postCode = response.code(), pageCode = it.errors.pageCode),postID=postID ) }
+            _state.update { it.copy(
+                post=response!!.body(),
+                errors = idkWhatToReadErrors(postCode = response.code(), pageCode = it.errors.pageCode),
+                pageNumber = it.pageNumber, page = it.page
+            )}
+
        }
     }
     fun fetchPage(pageNumber : Int = 0){
+        fetchPageCount()
 
         viewModelScope.launch {
 
-            _state.update { it.copy(errors = idkWhatToReadErrors(pageCode = CodeConsts.LOADING), pageNumber = 0 ) }
+            _state.update { it.copy(errors = idkWhatToReadErrors(pageCode = CodeConsts.LOADING,postCode = it.errors.postCode), pageNumber = pageNumber, postID = it.postID, post = it.post) }
 
 
             val safecall = async { runCatching { RetroFitInstance.postApi.getByPage(pageNumber) } }.await()
 
             if (!safecall.isSuccess) {
-                _state.update { it.copy( page=(listOf()), errors = idkWhatToReadErrors(pageCode = CodeConsts.CONNECTION_ERROR, postCode = it.errors.postCode), pageNumber = 0 ) }
+                _state.update { it.copy( page=(listOf()), errors = idkWhatToReadErrors(pageCode = CodeConsts.CONNECTION_ERROR, postCode = it.errors.postCode), pageNumber = 0, postID = it.postID, post = it.post ) }
                 return@launch
             }
 
             val response = safecall.getOrNull()
-            _state.update { it.copy( page=(response!!.body() ?: listOf()), errors = idkWhatToReadErrors(pageCode = response.code(), postCode = it.errors.postCode), pageNumber = pageNumber ) }
+            _state.update { it.copy( page=(response!!.body() ?: listOf()), errors = idkWhatToReadErrors(pageCode = response.code(), postCode = it.errors.postCode), pageNumber = pageNumber, postID = it.postID, post = it.post ) }
 
         }
     }
+    fun fetchPageCount(){
+        viewModelScope.launch {
+            val safecall = async { runCatching { RetroFitInstance.postApi.getOverallPages() } }.await()
 
-    fun setupReload(){
-        Log.println(Log.WARN,"setupReload","deprecated lol")
+            if (!safecall.isSuccess) {
+                _state.update { it.copy( pageCount = 0) }
+                return@launch
+            }
+
+            val response = safecall.getOrNull()
+            Log.println(Log.INFO,"idk",response.toString())
+            _state.update { it.copy(pageCount = response?.body()?:0) }
+        }
     }
 
-    fun setupPostReload(){
-        Log.println(Log.WARN,"setupPostReload","deprecated lol")
+    fun setPage(pageNumber: Int){
+        _state.update { it.copy(pageNumber = pageNumber) }
     }
+
 
 }

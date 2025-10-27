@@ -1,9 +1,10 @@
-package com.example.myapplication.ui.screens
+package com.example.myapplication.ui.screens.networked
 
 import android.graphics.Bitmap
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.compose.BackHandler
+import android.util.Log
+import androidx.compose.animation.core.AnimationState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,12 +17,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.myapplication.components.ErrorDialog
+import com.example.myapplication.components.FullScreenLoading
+import com.example.myapplication.components.FullScreenNetError
+import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.data.model.Post
 import com.example.myapplication.data.model.User
 import com.example.myapplication.navigation.Routes
@@ -30,48 +35,70 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 
 @Composable
-fun PostingScreen(viewModel: PostViewModel,curUser: User){
+fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavController){
 
     val state by viewModel.state.collectAsState()
     val image: Bitmap?= state.postBitmap
     val errors = state.postTitle.isEmpty() || image == null
+
+    Log.println(Log.INFO,"shit posting screen thing",state.postResult.toString())
+
+    if (state.postResult== CodeConsts.CONNECTION_ERROR){ FullScreenNetError();return }
+
+    if (state.postResult == CodeConsts.LOADING){
+        FullScreenLoading()
+        return
+    }
+    if (state.postResult == 201 ){
+        ErrorDialog({navController.navigate(Routes.HOME)},"Se pudo subir el post")
+    }
+
+
+
+
 
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             OutlinedTextField(
-                value=state.postTitle,
+                value = state.postTitle,
                 onValueChange = { viewModel.setPostTitle(it) },
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = Typography.headlineLarge,
-                label = {Text("Titlo del Post")},
+                label = { Text("Titlo del Post") },
                 isError = state.postTitle.isEmpty(),
             )
         },
         bottomBar = {
-            Column{
+            Column {
                 OutlinedTextField(
-                    value=state.postDesc,
+                    value = state.postDesc,
                     onValueChange = { viewModel.setPostDescription(it) },
                     modifier = Modifier.fillMaxWidth().size(256.dp),
                     textStyle = Typography.bodyLarge,
-                    label = {Text("Descripcion del Post")},
+                    label = { Text("Descripcion del Post") },
                 )
 
-                // TODO: actually post the image
                 Button(onClick = {
-                    viewModel.postImage(Post(postedBy = curUser, postID =-1, postTitle = state.postTitle, postDescription = state.postDesc))
-                }, enabled = !errors, modifier = Modifier.fillMaxWidth()) {Text("Subir Post")}
+                    viewModel.postImage(
+                        Post(
+                            postedBy = curUser,
+                            postID = -1,
+                            postTitle = state.postTitle,
+                            postDescription = state.postDesc
+                        )
+                    )
+                }, enabled = !errors, modifier = Modifier.fillMaxWidth()) { Text("Subir Post") }
             }
         }
 
-    ){
+    ) {
 
-        innerPadding->
-        if (image != null){
+            innerPadding ->
+        if (image != null) {
             Image(
-                bitmap= image.asImageBitmap(), null,
+                bitmap = image.asImageBitmap(), null,
                 modifier = Modifier.fillMaxSize().padding(innerPadding),
                 contentScale = ContentScale.Fit
             )

@@ -22,7 +22,7 @@ import com.example.myapplication.ui.screens.networked.PostDisplayScreen
 import com.example.myapplication.ui.screens.networked.HomeScreen
 import com.example.myapplication.ui.screens.LoadImageScreen
 import com.example.myapplication.ui.screens.networked.LoginScreen
-import com.example.myapplication.ui.screens.PostingScreen
+import com.example.myapplication.ui.screens.networked.PostingScreen
 import com.example.myapplication.ui.screens.networked.ProfileScreen
 import com.example.myapplication.ui.screens.RegisterScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
@@ -34,6 +34,7 @@ import com.example.myapplication.ui.viewmodel.PostReadViewModel
 import com.example.myapplication.ui.viewmodel.ProfileViewModel
 import com.example.myapplication.ui.viewmodel.UserViewModel
 import java.lang.Exception
+import kotlin.math.log
 
 
 class MainActivity : ComponentActivity() {
@@ -83,7 +84,11 @@ fun App() {
 
 
     Scaffold(
-        bottomBar = { BottomBar(navController, bottomItems) }
+        bottomBar = { BottomBar(navController, bottomItems,{
+            oldRoute, newRoute ->
+            if (loginState.responseCode == 200 || loginState.responseCode == 201) return@BottomBar
+            userViewModel.resetState()
+        }) }
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -112,8 +117,7 @@ fun App() {
                     profileID = loginState.user!!.userID
                 }
                 profileViewModel.loadUser(profileID)
-
-                ProfileScreen(navController,profileViewModel)
+                ProfileScreen(navController,profileViewModel,profileID)
             }
             composable(Routes.UPLOAD) {
                 if (loginState.user == null) {
@@ -137,12 +141,11 @@ fun App() {
                     LoginResquestMessage(navController)
                     return@composable
                 }
-                PostingScreen(postViewModel,loginState.user!!)
+                PostingScreen(postViewModel,loginState.user!!,navController)
             }
             composable(Routes.LOGIN) {
                 postViewModel.setBitmap(null)
                 LoginScreen(navController,userViewModel)
-
             }
             composable(Routes.REGISTER) {
                 postViewModel.setBitmap(null)
