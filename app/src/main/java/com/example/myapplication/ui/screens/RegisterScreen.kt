@@ -50,12 +50,14 @@ import java.util.regex.Pattern
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController,viewModel: UserViewModel){
+    /*
     val state by viewModel.state.collectAsState()
     var email by remember {mutableStateOf("")}
     var password by remember {mutableStateOf("")}
     var username by remember {mutableStateOf("")}
     val emailRegex = "[a-z0-9]+[_a-z0-9\\.-]*[a-z0-9]+@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})"
     val pattern: Pattern = Pattern.compile(emailRegex, Pattern.CASE_INSENSITIVE)
+
 
     if (state.responseCode == CodeConsts.LOADING){
         FullScreenLoading()
@@ -145,7 +147,7 @@ fun RegisterScreen(navController: NavController,viewModel: UserViewModel){
         ) {Text("Crear Cuenta")}
         Text(loginString)
     }
-
+*/
 
 }
 

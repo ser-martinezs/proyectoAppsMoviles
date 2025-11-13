@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 
 
 data class ProfileResponseCodes(
-    val userResponse :Int= CodeConsts.NOTHING,
-    val pageResponse :Int= CodeConsts.NOTHING
+    val userResponse : String= CodeConsts.NOTHING,
+    val pageResponse :String= CodeConsts.NOTHING
 )
 data class ProfileState(
     val user : User? = null,
@@ -31,6 +31,7 @@ class ProfileViewModel : ViewModel(){
     val state : StateFlow<ProfileState> = _state
 
     fun loadUser(userID: Long){
+       /*
         if (userID == _state.value.user?.userID) return
 
         viewModelScope.launch {
@@ -54,11 +55,11 @@ class ProfileViewModel : ViewModel(){
             ) }
 
 
-        }
+        }*/
     }
 
     fun loadUserPosts(userID: Long, pageNumber: Int){
-
+        /*
         viewModelScope.launch {
             _state.update { it.copy(responses = ProfileResponseCodes(pageResponse = CodeConsts.LOADING, userResponse = it.responses.userResponse), user = it.user) }
 
@@ -71,7 +72,9 @@ class ProfileViewModel : ViewModel(){
 
             val response = safecall.getOrNull()
             _state.update { it.copy( posts = (response!!.body() ?: listOf()), responses = ProfileResponseCodes(pageResponse = response.code(), userResponse = it.responses.userResponse),user = it.user ) }
-        }
+
+        }*/
+
 
 
 

@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.theme.Typography
 
 @Composable
-fun FullScreenNetError(){
+fun FullScreenNetError(errorMSG : String="no puso un error aca equisde"){
     Column(modifier = Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Text("No se pudo conectar al servidor.", style = Typography.headlineLarge)
+        Text(errorMSG, style = Typography.headlineLarge)
     }
 }

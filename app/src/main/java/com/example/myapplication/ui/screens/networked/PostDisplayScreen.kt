@@ -52,6 +52,7 @@ import com.example.myapplication.navigation.Routes
 import com.example.myapplication.ui.theme.Typography
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 import com.example.myapplication.ui.viewmodel.PostViewModel
+import com.example.myapplication.ui.viewmodel.ProfileViewModel
 
 
 // TODO: setup this to use data obtained from a server
@@ -60,7 +61,12 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 // well, atleast the android design side is mostly done IG
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PostDisplayScreen(imageID : Long, imageViewModel: PostReadViewModel, navController: NavController){
+fun PostDisplayScreen(
+
+    imageViewModel: PostReadViewModel,
+    navController: NavController
+
+){
 
     val state by imageViewModel.state.collectAsState();
     val animationDuration = 200
@@ -69,31 +75,18 @@ fun PostDisplayScreen(imageID : Long, imageViewModel: PostReadViewModel, navCont
     val blurScale = animateDpAsState(if (descriptionPressed) 8.dp else 0.dp, animationSpec = tween(animationDuration))
     val imageColor = animateColorAsState(if (descriptionPressed) Color(0xFF363636) else Color(0xFFFFFFFF), animationSpec = tween(animationDuration))
 
-    if (state.postID == null || state.postID != imageID){
-        imageViewModel.fetchPost(postID = imageID)
-    }
 
 
-    when (state.errors.postCode){
-        CodeConsts.NOTHING -> {
-            return
-        }
-        CodeConsts.CONNECTION_ERROR ->{
-            FullScreenNetError()
-            return
-        }
-        404 -> {
-            Column(modifier = Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-                Text("El post no se pudo encontrar", style = Typography.headlineLarge)
-            }
-            return
-        }
-    }
-    if (state.errors.postCode == CodeConsts.LOADING || state.errors.postCode== CodeConsts.NOTHING){
+
+    if (state.errors.postError == CodeConsts.LOADING){
         FullScreenLoading()
         return
     }
-    if (state.errors.postCode != 200) return
+
+    if (state.errors.postError.isNotEmpty()) {
+        FullScreenNetError(state.errors.postError)
+        return
+    }
 
     Column(
         modifier = Modifier
@@ -125,7 +118,12 @@ fun PostDisplayScreen(imageID : Long, imageViewModel: PostReadViewModel, navCont
     ){
         Text(
             state.post!!.postedBy.userName,
-            modifier = Modifier.clickable(onClick = { navController.navigate(Routes.profileRoute(state.post!!.postedBy.userID))}).dropShadow(RectangleShape, Shadow(16.dp, spread = 1.dp)),
+            modifier = Modifier.clickable(onClick = {
+
+                navController.navigate(Routes.profileRoute(state.post!!.postedBy.userID))
+
+            }).dropShadow(RectangleShape, Shadow(16.dp, spread = 1.dp)),
+
             color = Color.Blue
         )
 

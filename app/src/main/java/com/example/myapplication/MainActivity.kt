@@ -30,6 +30,7 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 
 import com.example.myapplication.comoponents.LoginResquestMessage
+import com.example.myapplication.ui.screens.TodoScreen
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 import com.example.myapplication.ui.viewmodel.ProfileViewModel
 import com.example.myapplication.ui.viewmodel.UserViewModel
@@ -84,11 +85,7 @@ fun App() {
 
 
     Scaffold(
-        bottomBar = { BottomBar(navController, bottomItems,{
-            oldRoute, newRoute ->
-            if (loginState.responseCode == 200 || loginState.responseCode == 201) return@BottomBar
-            userViewModel.resetState()
-        }) }
+        bottomBar = { BottomBar(navController, bottomItems,{a,b ->}) }
     ) { innerPadding ->
         NavHost(
             navController = navController,
@@ -102,54 +99,46 @@ fun App() {
                 route = Routes.PROFILE,
                 arguments = listOf(navArgument("id") { nullable = true })
             ) { backStackEntry ->
-                // TODO: avoid crashing when bad id
-                postViewModel.setBitmap(null)
-
-                var profileID: Long? = null
-                try { profileID = (backStackEntry.arguments?.getString("id"))?.toLong() }
-                catch (e: Exception){profileID=null}
-
-                if (profileID == null) {
-                    if (loginState.user == null) {
-                        LoginResquestMessage(navController)
-                        return@composable
-                    }
-                    profileID = loginState.user!!.userID
-                }
-                profileViewModel.loadUser(profileID)
-                ProfileScreen(navController,profileViewModel,profileID)
+                TodoScreen()
             }
             composable(Routes.UPLOAD) {
+
                 if (loginState.user == null) {
                     LoginResquestMessage(navController)
                     return@composable
                 }
-                LoadImageScreen(navController, postViewModel)
+                /*LoadImageScreen(navController, postViewModel)*/
+                TodoScreen()
             }
 
             composable(
                 route = Routes.IMAGE,
                 arguments = listOf(navArgument("id") { type = NavType.LongType })
-            ) { backStackEntry ->
+            ) {
+                backStackEntry ->
                 postViewModel.setBitmap(null)
                 val id = backStackEntry.arguments?.getLong("id") ?: -1
+                PostDisplayScreen(imageViewModel,navController);
 
-                PostDisplayScreen(id,imageViewModel, navController);
             }
             composable(route = Routes.POST) {
+                TodoScreen()
                 if (loginState.user == null) {
                     LoginResquestMessage(navController)
                     return@composable
-                }
-                PostingScreen(postViewModel,loginState.user!!,navController)
+                }                /*
+
+                PostingScreen(postViewModel,loginState.user!!,navController)*/
             }
             composable(Routes.LOGIN) {
-                postViewModel.setBitmap(null)
-                LoginScreen(navController,userViewModel)
+                TodoScreen()
+                //postViewModel.setBitmap(null)
+                //LoginScreen(navController,userViewModel)
             }
             composable(Routes.REGISTER) {
-                postViewModel.setBitmap(null)
-                RegisterScreen(navController,userViewModel)
+                TodoScreen()
+                //postViewModel.setBitmap(null)
+                //RegisterScreen(navController,userViewModel)
             }
         }
     }

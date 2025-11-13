@@ -23,20 +23,25 @@ import com.example.myapplication.ui.viewmodel.ProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(navController: NavController,viewModel: ProfileViewModel,userID: Long){
+fun ProfileScreen(
+    navController: NavController,
+    viewModel: ProfileViewModel,
+
+    userID: Long
+){
+
     val state by viewModel.state.collectAsState()
     viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
 
-    if (state.responses.userResponse == CodeConsts.LOADING || state.responses.userResponse== CodeConsts.LOADING){
+    // what the fuck?? 12-11-2025
+    if (state.responses.userResponse == CodeConsts.LOADING){
         FullScreenLoading()
         return
     }
-    if (state.responses.userResponse == CodeConsts.CONNECTION_ERROR) {FullScreenNetError();return}
-    if (state.responses.userResponse == 404) {
-        Column(modifier=Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.Center) {Text("No se pudo cargar el usuario")}
+    if (state.responses.userResponse.isNotEmpty()) {
+        FullScreenNetError(state.responses.userResponse)
         return
     }
-
 
     Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
         Text("Posts por ${state.user!!.userName}:", style = Typography.headlineLarge)

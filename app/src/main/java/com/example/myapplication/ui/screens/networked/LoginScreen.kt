@@ -40,6 +40,7 @@ import java.util.regex.Pattern
 
 @Composable
 fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
+    /*
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val state by viewmodel.state.collectAsState()
@@ -126,7 +127,7 @@ fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
         Text(registerString)
     }
 
-
+*/
 
 }
 

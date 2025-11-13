@@ -36,7 +36,7 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 @Composable
 fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavController){
-
+    /*
     val state by viewModel.state.collectAsState()
     val image: Bitmap?= state.postBitmap
     val errors = state.postTitle.isEmpty() || image == null
@@ -104,6 +104,6 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
             )
         }
 
-    }
+    }*/
 
 }

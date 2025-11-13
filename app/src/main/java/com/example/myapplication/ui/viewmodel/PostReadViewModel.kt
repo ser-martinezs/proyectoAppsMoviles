@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.data.model.Post
+import com.example.myapplication.data.repository.PostRepository
 import com.example.myapplication.data.service.RetroFitInstance
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,9 +17,9 @@ import kotlinx.coroutines.launch
 
 
 data class idkWhatToReadErrors(
-    val pageCode : Int = CodeConsts.NOTHING,
-    val postCode : Int = CodeConsts.NOTHING
-){}
+    val pageError : String = CodeConsts.NOTHING,
+    val postError : String = CodeConsts.NOTHING
+)
 
 
 data class IdkWhatToNameState(
@@ -26,80 +27,68 @@ data class IdkWhatToNameState(
     val page : List<Post> = listOf(),
     val errors : idkWhatToReadErrors= idkWhatToReadErrors(),
     val pageNumber: Int=0,
-    val postID : Long?= null,
     val pageCount : Int= 0
 )
 
 
-class PostReadViewModel : ViewModel() {
+class PostReadViewModel(val repository: PostRepository = PostRepository()) : ViewModel() {
     private val _state = MutableStateFlow<IdkWhatToNameState>(IdkWhatToNameState())
     val state : StateFlow<IdkWhatToNameState> = _state
 
+    init {
+        fetchPage(0)
+    }
+
     fun fetchPost(postID: Long){
-
         viewModelScope.launch {
-            _state.update{it.copy(
-                errors= idkWhatToReadErrors(postCode = CodeConsts.LOADING, pageCode = it.errors.pageCode),
-                postID=postID, pageNumber = it.pageNumber, page = it.page
-            )}
+            _state.update { it.copy(errors = idkWhatToReadErrors(postError = CodeConsts.LOADING)) }
+            var post : Post? = null
+            var errorMsg = ""
 
+            try {
+                post = repository.getByPostID(postID)
 
-            val safecall = async { runCatching { RetroFitInstance.postApi.getByPostID(postID) } }.await()
-
-            if (!safecall.isSuccess) {
-                _state.update { it.copy(
-                    errors = idkWhatToReadErrors(postCode = CodeConsts.CONNECTION_ERROR,pageCode = it.errors.pageCode),
-                    pageNumber = it.pageNumber, page = it.page
-                )}
-                return@launch
+            }catch (error: Exception){
+                error.printStackTrace()
+                errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
-            val response = safecall.getOrNull()
-            _state.update { it.copy(
-                post=response!!.body(),
-                errors = idkWhatToReadErrors(postCode = response.code(), pageCode = it.errors.pageCode),
-                pageNumber = it.pageNumber, page = it.page
-            )}
 
+            _state.update { it.copy(errors = idkWhatToReadErrors(postError = errorMsg), post = post) }
        }
     }
     fun fetchPage(pageNumber : Int = 0){
         fetchPageCount()
-
         viewModelScope.launch {
+            _state.update { it.copy(errors = idkWhatToReadErrors(pageError = CodeConsts.LOADING)) }
 
-            _state.update { it.copy(errors = idkWhatToReadErrors(pageCode = CodeConsts.LOADING,postCode = it.errors.postCode), pageNumber = pageNumber, postID = it.postID, post = it.post) }
+            var page : List<Post> = listOf()
+            var errorMsg = ""
 
-
-            val safecall = async { runCatching { RetroFitInstance.postApi.getByPage(pageNumber) } }.await()
-
-            if (!safecall.isSuccess) {
-                _state.update { it.copy( page=(listOf()), errors = idkWhatToReadErrors(pageCode = CodeConsts.CONNECTION_ERROR, postCode = it.errors.postCode), pageNumber = 0, postID = it.postID, post = it.post ) }
-                return@launch
+            try {
+                page = repository.getPage(pageNumber)
+            }catch (error: Exception){
+                error.printStackTrace()
+                errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
 
-            val response = safecall.getOrNull()
-            _state.update { it.copy( page=(response!!.body() ?: listOf()), errors = idkWhatToReadErrors(pageCode = response.code(), postCode = it.errors.postCode), pageNumber = pageNumber, postID = it.postID, post = it.post ) }
+            _state.update { it.copy(errors = idkWhatToReadErrors(pageError = errorMsg), page = page, pageNumber = pageNumber) }
+
 
         }
     }
+
     fun fetchPageCount(){
         viewModelScope.launch {
-            val safecall = async { runCatching { RetroFitInstance.postApi.getOverallPages() } }.await()
-
-            if (!safecall.isSuccess) {
-                _state.update { it.copy( pageCount = 0) }
-                return@launch
+            var pageCount = 0
+            try {
+                pageCount = repository.getPageCount()
+            }catch (error: Exception){
+                error.printStackTrace()
             }
-
-            val response = safecall.getOrNull()
-            Log.println(Log.INFO,"idk",response.toString())
-            _state.update { it.copy(pageCount = response?.body()?:0) }
+            _state.update { it.copy(pageCount=pageCount) }
         }
     }
 
-    fun setPage(pageNumber: Int){
-        _state.update { it.copy(pageNumber = pageNumber) }
-    }
 
 
 }

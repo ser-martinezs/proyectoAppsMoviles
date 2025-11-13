@@ -19,21 +19,22 @@ fun HomeScreen(navController: NavController,imageViewModel: PostReadViewModel) {
     val state by imageViewModel.state.collectAsState()
 
 
-    imageViewModel.fetchPage(state.pageNumber)
-
-
-    Log.println(Log.INFO,"idk",state.pageCount.toString())
-    if (state.errors.pageCode == CodeConsts.LOADING){
+    if (state.errors.pageError == CodeConsts.LOADING){
         FullScreenLoading()
         return
     }
-    if (state.errors.pageCode == CodeConsts.CONNECTION_ERROR){
-        FullScreenNetError()
+    if (state.errors.pageError.isNotEmpty()){
+        FullScreenNetError(state.errors.pageError)
         return
     }
-    if (state.errors.pageCode != 200) return
 
-    PostContainer(navController,state.page,state.pageNumber,state.pageCount,{imageViewModel.setPage(it)})
+    PostContainer(
+        navController,
+        state.page,
+        state.pageNumber,
+        state.pageCount,
+        {imageViewModel.fetchPage(it)},
+    )
 
 }
 

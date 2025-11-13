@@ -21,7 +21,9 @@ import com.example.myapplication.ui.theme.Typography
 fun PostThingy(post: Post, navController: NavController){
 
     Box(
-        modifier = Modifier.fillMaxWidth().clickable(onClick = { navController.navigate(Routes.imageRoute(post.postID)) }),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = {
+            navController.navigate(Routes.imageRoute(post.postID))
+        }),
     ){
 
         Row(Modifier.fillMaxWidth()) {

@@ -28,7 +28,7 @@ data class PostUIState(
     val postBitmap : Bitmap?=null,
     val postTitle : String="",
     val postDesc : String="",
-    val postResult:Int = CodeConsts.NOTHING
+    val postResult:String = CodeConsts.NOTHING
 )
 
 class PostViewModel() :ViewModel(){
@@ -56,16 +56,7 @@ class PostViewModel() :ViewModel(){
 
     fun setBitmap(bitmap: Bitmap?){ _state.update { it.copy(postBitmap = bitmap) } }
 
-    fun cleanupPost(){
-        setBitmap(null)
-        if (_state.value.tempFile == Uri.EMPTY) return
-        val file = File(_state.value.tempFile.path!!)
-        file.delete()
 
-        _state.update { it.copy(tempFile = Uri.EMPTY) }
-
-
-    }
 
     fun setPostTitle(title: String) : Boolean{
          if (title.length > 32) return false
@@ -80,7 +71,7 @@ class PostViewModel() :ViewModel(){
     }
 
     // TODO: fix this
-    fun postImage(postData: Post){
+    fun postImage(postData: Post){/*
         viewModelScope.launch {
             _state.update { it.copy(postResult = CodeConsts.LOADING) }
             val postImage = _state.value.postBitmap
@@ -107,12 +98,12 @@ class PostViewModel() :ViewModel(){
 
             bitmapStream.close()
         }
-
+        */
 
     }
 
     fun resetSendState(){
-        _state.update { it.copy(postResult = CodeConsts.NOTHING) }
+        //_state.update { it.copy(postResult = CodeConsts.NOTHING) }
     }
 
 
