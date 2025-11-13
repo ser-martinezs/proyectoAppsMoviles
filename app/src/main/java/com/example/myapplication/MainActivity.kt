@@ -93,6 +93,7 @@ fun App() {
             startDestination = Routes.HOME,
             modifier = androidx.compose.ui.Modifier.padding(innerPadding)
         ) {
+            // TODO: reload home on posting / let users #reload manually
             composable(Routes.HOME) {
                 HomeScreen(navController,homeScreenViewModel)
             }
@@ -122,7 +123,7 @@ fun App() {
                     LoginResquestMessage(navController)
                     return@composable
                 }
-                /*LoadImageScreen(navController, postViewModel)*/
+                LoadImageScreen(navController, postViewModel)
                 TodoScreen()
             }
 
@@ -141,9 +142,9 @@ fun App() {
                 if (loginState.user == null) {
                     LoginResquestMessage(navController)
                     return@composable
-                }                /*
+                }
 
-                PostingScreen(postViewModel,loginState.user!!,navController)*/
+                PostingScreen(postViewModel,loginState.user!!,navController)
             }
             composable(Routes.LOGIN) {
                 postViewModel.setBitmap(null)

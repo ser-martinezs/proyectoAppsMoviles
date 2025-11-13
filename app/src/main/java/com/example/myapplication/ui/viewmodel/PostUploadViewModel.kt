@@ -76,7 +76,7 @@ class PostViewModel(val repository: PostRepository = PostRepository()) :ViewMode
         _state.update { it.copy(postResult = CodeConsts.LOADING) }
         viewModelScope.launch {
 
-            var errorMsg = CodeConsts.NOTHING
+            var errorMsg = CodeConsts.SUCCESS
             val postImage = _state.value.postBitmap
             if (postImage == null) return@launch
             val bitmapStream = ByteArrayOutputStream()
@@ -95,7 +95,7 @@ class PostViewModel(val repository: PostRepository = PostRepository()) :ViewMode
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
             _state.update { it.copy(postResult = errorMsg) }
-            
+
             bitmapStream.close()
 
         }

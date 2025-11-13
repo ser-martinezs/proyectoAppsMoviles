@@ -36,12 +36,13 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 @Composable
 fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavController){
-    /*
+
     val state by viewModel.state.collectAsState()
     val image: Bitmap?= state.postBitmap
     val errors = state.postTitle.isEmpty() || image == null
 
     Log.println(Log.INFO,"shit posting screen thing",state.postResult.toString())
+
 
     if (state.postResult== CodeConsts.CONNECTION_ERROR){ FullScreenNetError();return }
 
@@ -49,7 +50,8 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
         FullScreenLoading()
         return
     }
-    if (state.postResult == 201 ){
+    if (state.postResult == CodeConsts.SUCCESS){
+        viewModel.resetSendState()
         ErrorDialog({navController.navigate(Routes.HOME)},"Se pudo subir el post")
     }
 
@@ -104,6 +106,6 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
             )
         }
 
-    }*/
+    }
 
 }
