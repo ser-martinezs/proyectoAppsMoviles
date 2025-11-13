@@ -16,37 +16,57 @@ import kotlinx.coroutines.launch
 
 
 
-data class IdkWhatToNameState(
-    val post : Post? = null,
+
+data class HomeScreenState(
     val page : List<Post> = listOf(),
     val error : String="",
+    val pageNumber: Int=0,
+    val pageCount : Int= 0
 )
 
 
-class PostReadViewModel(val repository: PostRepository = PostRepository()) : ViewModel() {
-    private val _state = MutableStateFlow<IdkWhatToNameState>(IdkWhatToNameState())
-    val state : StateFlow<IdkWhatToNameState> = _state
+class HomeScreenViewModel(val repository: PostRepository = PostRepository()) : ViewModel() {
+    private val _state = MutableStateFlow<HomeScreenState>(HomeScreenState())
+    val state : StateFlow<HomeScreenState> = _state
+
+    init {
+        fetchPage(0)
+    }
 
 
-    fun fetchPost(postID: Long){
+    fun fetchPage(pageNumber : Int = 0){
+        fetchPageCount()
+
         _state.update { it.copy(error = CodeConsts.LOADING) }
 
         viewModelScope.launch {
-            var post : Post? = null
+            var page : List<Post> = listOf()
             var errorMsg = ""
 
             try {
-                post = repository.getByPostID(postID)
-
+                page = repository.getPage(pageNumber)
             }catch (error: Exception){
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
 
-            _state.update { it.copy(error = errorMsg, post = post) }
-       }
+            _state.update { it.copy(error = errorMsg, page = page, pageNumber = pageNumber) }
+
+
+        }
     }
 
+    fun fetchPageCount(){
+        viewModelScope.launch {
+            var pageCount = 0
+            try {
+                pageCount = repository.getPageCount()
+            }catch (error: Exception){
+                error.printStackTrace()
+            }
+            _state.update { it.copy(pageCount=pageCount) }
+        }
+    }
 
 
 

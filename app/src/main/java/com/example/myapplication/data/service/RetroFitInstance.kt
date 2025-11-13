@@ -15,16 +15,16 @@ class CustomClient : OkHttpClient(){
 }
 
 object RetroFitInstance {
-    private const val SERVER_LOCATION = "http://192.168.1.13:8080"
+    private const val SERVER_LOCATION = "http://10.0.2.2:8080"
     const val IMAGE_LINK = "${SERVER_LOCATION}/images/" // gonna get a proper url soon
 
 
-    val userApi : UserRepository by lazy {
+    val userApi : UserService by lazy {
         Retrofit.Builder().
         baseUrl(SERVER_LOCATION).
         addConverterFactory(GsonConverterFactory.create()).
         build().
-        create(UserRepository::class.java)
+        create(UserService::class.java)
     }
 
     val postApi : PostService by lazy {

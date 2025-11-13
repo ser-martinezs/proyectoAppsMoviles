@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.myapplication.components.FullScreenLoading
 import com.example.myapplication.components.FullScreenNetError
@@ -25,13 +26,15 @@ import com.example.myapplication.ui.viewmodel.ProfileViewModel
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel,
-
-    userID: Long
+    userID: Long,
+    viewModel: ProfileViewModel = viewModel(),
 ){
 
     val state by viewModel.state.collectAsState()
+
+    viewModel.loadUser(userID)
     viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+
 
     // what the fuck?? 12-11-2025
     if (state.responses.userResponse == CodeConsts.LOADING){
@@ -42,6 +45,11 @@ fun ProfileScreen(
         FullScreenNetError(state.responses.userResponse)
         return
     }
+    if (state.user == null){
+        FullScreenNetError("no se pudo cargar el usuario :/")
+        return
+    }
+
 
     Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
         Text("Posts por ${state.user!!.userName}:", style = Typography.headlineLarge)

@@ -40,6 +40,7 @@ import androidx.compose.ui.graphics.shadow.Shadow
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.myapplication.R
@@ -62,13 +63,14 @@ import com.example.myapplication.ui.viewmodel.ProfileViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PostDisplayScreen(
-
-    imageViewModel: PostReadViewModel,
-    navController: NavController
-
+    id:Long,
+    navController: NavController,
+    viewmodel: PostReadViewModel = viewModel()
 ){
 
-    val state by imageViewModel.state.collectAsState();
+
+
+    val state by viewmodel.state.collectAsState();
     val animationDuration = 200
     var descriptionPressed by remember { mutableStateOf(false );}
     val textScale = animateDpAsState(if (descriptionPressed) 256.dp else 64.dp, animationSpec = tween(animationDuration))
@@ -77,16 +79,25 @@ fun PostDisplayScreen(
 
 
 
+    if (state.post?.postID != id && state.error.isEmpty())
+    {
+        viewmodel.fetchPost(id)
+        Log.println(Log.INFO,"PostDisplayScreen",state.error)
+        return
+    }
 
-    if (state.errors.postError == CodeConsts.LOADING){
+
+
+    if (state.error == CodeConsts.LOADING){
         FullScreenLoading()
         return
     }
 
-    if (state.errors.postError.isNotEmpty()) {
-        FullScreenNetError(state.errors.postError)
+    if (state.error.isNotEmpty()) {
+        FullScreenNetError(state.error)
         return
     }
+
 
     Column(
         modifier = Modifier

@@ -50,7 +50,7 @@ import java.util.regex.Pattern
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(navController: NavController,viewModel: UserViewModel){
-    /*
+
     val state by viewModel.state.collectAsState()
     var email by remember {mutableStateOf("")}
     var password by remember {mutableStateOf("")}
@@ -59,24 +59,17 @@ fun RegisterScreen(navController: NavController,viewModel: UserViewModel){
     val pattern: Pattern = Pattern.compile(emailRegex, Pattern.CASE_INSENSITIVE)
 
 
-    if (state.responseCode == CodeConsts.LOADING){
+    if (state.error == CodeConsts.LOADING){
         FullScreenLoading()
         return
     }
 
-    if (state.responseCode == 400 || state.responseCode == 500){
-        ErrorDialog({viewModel.resetState()},"Hubo un problema para crear el usuario.",)
+    if (state.error.isNotEmpty()){
+        ErrorDialog({viewModel.resetState()},state.error)
         return
     }
-    if (state.responseCode == 409){
-        ErrorDialog({viewModel.resetState()},"este nombre de usuario o correo ya esta siendo usado.",)
-        return
-    }
-    if (state.responseCode == CodeConsts.CONNECTION_ERROR){
-        ErrorDialog({viewModel.resetState()},"Hubo un problema para conectarse con el servidor")
-        return
-    }
-    if (state.responseCode == 201) {
+
+    if (state.user != null) {
         navController.popBackStack()
         return
     }
@@ -147,7 +140,7 @@ fun RegisterScreen(navController: NavController,viewModel: UserViewModel){
         ) {Text("Crear Cuenta")}
         Text(loginString)
     }
-*/
+
 
 }
 

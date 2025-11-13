@@ -10,21 +10,22 @@ import com.example.myapplication.components.FullScreenLoading
 import com.example.myapplication.components.FullScreenNetError
 import com.example.myapplication.components.PostContainer
 import com.example.myapplication.data.CodeConsts
+import com.example.myapplication.ui.viewmodel.HomeScreenViewModel
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 
 
 // TODO: somehow get posts from a server and store them in RAM
 @Composable
-fun HomeScreen(navController: NavController,imageViewModel: PostReadViewModel) {
-    val state by imageViewModel.state.collectAsState()
+fun HomeScreen(navController: NavController,homeViewModel: HomeScreenViewModel) {
+    val state by homeViewModel.state.collectAsState()
 
 
-    if (state.errors.pageError == CodeConsts.LOADING){
+    if (state.error == CodeConsts.LOADING){
         FullScreenLoading()
         return
     }
-    if (state.errors.pageError.isNotEmpty()){
-        FullScreenNetError(state.errors.pageError)
+    if (state.error.isNotEmpty()){
+        FullScreenNetError(state.error)
         return
     }
 
@@ -33,7 +34,7 @@ fun HomeScreen(navController: NavController,imageViewModel: PostReadViewModel) {
         state.page,
         state.pageNumber,
         state.pageCount,
-        {imageViewModel.fetchPage(it)},
+        {homeViewModel.fetchPage(it)},
     )
 
 }

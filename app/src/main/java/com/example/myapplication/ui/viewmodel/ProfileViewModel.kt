@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.data.model.Post
 import com.example.myapplication.data.model.User
+import com.example.myapplication.data.repository.PostRepository
+import com.example.myapplication.data.repository.UserRepository
 import com.example.myapplication.data.service.RetroFitInstance
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,54 +28,62 @@ data class ProfileState(
 )
 
 
-class ProfileViewModel : ViewModel(){
+class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val postRepo: PostRepository = PostRepository()) : ViewModel(){
     private val _state = MutableStateFlow(ProfileState())
     val state : StateFlow<ProfileState> = _state
 
+
+
     fun loadUser(userID: Long){
-       /*
-        if (userID == _state.value.user?.userID) return
+        _state.update { it.copy(responses = it.responses.copy(userResponse = CodeConsts.LOADING)) }
 
         viewModelScope.launch {
-            _state.update { it.copy(
-                responses = ProfileResponseCodes(userResponse = CodeConsts.LOADING, pageResponse = it.responses.pageResponse),
-                page = it.page, posts = it.posts
-            ) }
+            var user : User?= null
+            var errorMsg :String = ""
 
 
-            val safecall = async { runCatching { RetroFitInstance.userApi.getByUserID(userID) } }.await()
-
-            if (!safecall.isSuccess) {
-                _state.update { it.copy( responses = ProfileResponseCodes(userResponse = CodeConsts.CONNECTION_ERROR)) }
-                return@launch
+            try {
+                user = userRepo.getByUserID(userID)
+            }catch (error: Exception){
+                error.printStackTrace()
+                errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
 
-            val response = safecall.getOrNull()
-            _state.update { it.copy( user = response!!.body(),
-                responses = ProfileResponseCodes(userResponse = response.code(),pageResponse = it.responses.pageResponse),
-                page = it.page, posts = it.posts
-            ) }
+            _state.update { it.copy(responses = it.responses.copy(userResponse = errorMsg), user = user) }
 
 
-        }*/
+        }
+
     }
 
     fun loadUserPosts(userID: Long, pageNumber: Int){
-        /*
-        viewModelScope.launch {
-            _state.update { it.copy(responses = ProfileResponseCodes(pageResponse = CodeConsts.LOADING, userResponse = it.responses.userResponse), user = it.user) }
+        _state.update { it.copy(responses = ProfileResponseCodes(pageResponse = CodeConsts.LOADING)) }
 
+        viewModelScope.launch {
+            var posts :List<Post> = listOf()
+            var errorMsg = ""
+
+            try {
+                posts = postRepo.getUserPostsByPage(userID,pageNumber)
+            }catch (error: Exception){
+                error.printStackTrace()
+                errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
+            }
+            _state.update { it.copy( posts = (posts), responses = ProfileResponseCodes(pageResponse = errorMsg)) }
+
+
+            /*
             val safecall = async { runCatching { RetroFitInstance.postApi.getUserPostsByPage(userID,pageNumber) } }.await()
 
             if (!safecall.isSuccess) {
                 _state.update { it.copy( responses = ProfileResponseCodes(pageResponse = CodeConsts.CONNECTION_ERROR)) }
                 return@launch
-            }
+            }*/
 
-            val response = safecall.getOrNull()
-            _state.update { it.copy( posts = (response!!.body() ?: listOf()), responses = ProfileResponseCodes(pageResponse = response.code(), userResponse = it.responses.userResponse),user = it.user ) }
+            //val response = safecall.getOrNull()
+            //_state.update { it.copy( posts = (response!!.body() ?: listOf()), responses = ProfileResponseCodes(pageResponse = response.code(), userResponse = it.responses.userResponse),user = it.user ) }
 
-        }*/
+        }
 
 
 

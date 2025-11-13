@@ -8,7 +8,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 
-interface UserRepository {
+interface UserService {
 
     @PUT("/api/v1/users/login")
     suspend fun login(@Body credentials: User) : User

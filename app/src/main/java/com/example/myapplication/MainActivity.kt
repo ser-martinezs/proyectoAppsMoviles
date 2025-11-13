@@ -31,6 +31,7 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 import com.example.myapplication.comoponents.LoginResquestMessage
 import com.example.myapplication.ui.screens.TodoScreen
+import com.example.myapplication.ui.viewmodel.HomeScreenViewModel
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 import com.example.myapplication.ui.viewmodel.ProfileViewModel
 import com.example.myapplication.ui.viewmodel.UserViewModel
@@ -74,10 +75,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun App() {
 
+    val homeScreenViewModel : HomeScreenViewModel = viewModel()
     val userViewModel : UserViewModel = viewModel()
     val postViewModel: PostViewModel = viewModel()
-    val imageViewModel : PostReadViewModel = viewModel()
-    val profileViewModel : ProfileViewModel = viewModel()
+
     val navController = rememberNavController()
 
     val bottomItems = listOf(BottomNavItem.Home, BottomNavItem.Upload, BottomNavItem.Profile)
@@ -93,13 +94,27 @@ fun App() {
             modifier = androidx.compose.ui.Modifier.padding(innerPadding)
         ) {
             composable(Routes.HOME) {
-                HomeScreen(navController,imageViewModel)
+                HomeScreen(navController,homeScreenViewModel)
             }
             composable(
                 route = Routes.PROFILE,
                 arguments = listOf(navArgument("id") { nullable = true })
             ) { backStackEntry ->
-                TodoScreen()
+                // TODO: avoid crashing when bad id
+                postViewModel.setBitmap(null)
+                var profileID: Long? = null
+                try { profileID = (backStackEntry.arguments?.getString("id"))?.toLong() }
+                catch (e: Exception){profileID=null}
+
+                if (profileID == null) {
+                    if (loginState.user == null) {
+                        LoginResquestMessage(navController)
+                        return@composable
+                    }
+                    profileID = loginState.user!!.userID
+                }
+
+                ProfileScreen(navController, userID = profileID)
             }
             composable(Routes.UPLOAD) {
 
@@ -118,7 +133,7 @@ fun App() {
                 backStackEntry ->
                 postViewModel.setBitmap(null)
                 val id = backStackEntry.arguments?.getLong("id") ?: -1
-                PostDisplayScreen(imageViewModel,navController);
+                PostDisplayScreen(id,navController);
 
             }
             composable(route = Routes.POST) {
@@ -131,14 +146,13 @@ fun App() {
                 PostingScreen(postViewModel,loginState.user!!,navController)*/
             }
             composable(Routes.LOGIN) {
-                TodoScreen()
-                //postViewModel.setBitmap(null)
-                //LoginScreen(navController,userViewModel)
+                postViewModel.setBitmap(null)
+                LoginScreen(navController,userViewModel)
             }
             composable(Routes.REGISTER) {
-                TodoScreen()
-                //postViewModel.setBitmap(null)
-                //RegisterScreen(navController,userViewModel)
+                postViewModel.setBitmap(null)
+                RegisterScreen(navController,userViewModel)
+
             }
         }
     }

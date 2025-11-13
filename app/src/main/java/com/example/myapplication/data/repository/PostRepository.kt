@@ -3,6 +3,10 @@ package com.example.myapplication.data.repository
 import android.graphics.Bitmap
 import com.example.myapplication.data.model.Post
 import com.example.myapplication.data.service.RetroFitInstance
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.ByteArrayOutputStream
 
 
 class PostRepository {
@@ -22,9 +26,12 @@ class PostRepository {
 
     suspend fun getUserPageCount(userID: Long): Int{ return RetroFitInstance.postApi.getUserPages(userID) }
 
-    suspend fun uploadPost(image : Bitmap, post: Post) : String{
-        throw NotImplementedError()
-        //return RetroFitInstance.postApi.uploadPost(image,post)
+    suspend fun uploadPost(stream:ByteArrayOutputStream, post: Post) : String{
+
+        val reqBody = stream.toByteArray().toRequestBody("image/webp".toMediaTypeOrNull())
+        val imageFile: MultipartBody.Part = MultipartBody.Part.createFormData("file", "thisisgettingoverridenanywaysright", reqBody)
+
+        return RetroFitInstance.postApi.uploadPost(imageFile,post)
     }
 
 

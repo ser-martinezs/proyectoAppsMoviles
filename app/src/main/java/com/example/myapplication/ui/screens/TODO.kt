@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun TodoScreen(){
+
     Column(modifier=Modifier.fillMaxSize().padding(20.dp), verticalArrangement = Arrangement.Center) {
         Text("SE TIENE QUE REIMPLEMENTAR ESTA PANTALLA!!!")
     }

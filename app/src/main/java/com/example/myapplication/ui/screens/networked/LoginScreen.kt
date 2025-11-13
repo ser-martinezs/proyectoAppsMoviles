@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.myapplication.components.ErrorDialog
 import com.example.myapplication.components.FullScreenLoading
+import com.example.myapplication.components.FullScreenNetError
 import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.data.model.User
 import com.example.myapplication.navigation.Routes
@@ -40,21 +41,26 @@ import java.util.regex.Pattern
 
 @Composable
 fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
-    /*
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val state by viewmodel.state.collectAsState()
     val emailRegex = "[a-z0-9]+[_a-z0-9\\.-]*[a-z0-9]+@[a-z0-9-]+(\\.[a-z0-9-]+)*(\\.[a-z]{2,4})"
     val pattern: Pattern = Pattern.compile(emailRegex, Pattern.CASE_INSENSITIVE)
 
-    Log.println(Log.INFO,"shit crap fuck shit","${state.responseCode}}")
 
-    if (state.responseCode == CodeConsts.LOADING){
+    if (state.error == CodeConsts.LOADING){
         FullScreenLoading()
         return
     }
-    if (state.responseCode == 400 || state.responseCode == 500){
-        ErrorDialog({viewmodel.resetState()},"Hubo un problema para iniciar sesion")
+    if (state.error.isNotEmpty()){
+        ErrorDialog({viewmodel.resetState()},state.error)
+        return
+    }
+
+    /*
+    if (state.error.isNotEmpty()){
+        ErrorDialog({viewmodel.resetState()},state.error)
         return
     }
     if (state.responseCode == CodeConsts.CONNECTION_ERROR){
@@ -64,9 +70,10 @@ fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
     if (state.responseCode == 401){
         ErrorDialog({viewmodel.resetState()},"Credenciales incorrectas.")
         return
-    }
+    }*/
 
-    if (state.responseCode == 200) {
+
+    if (state.user != null) {
         navController.popBackStack()
         return
     }
@@ -126,8 +133,6 @@ fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
         ) {Text("Iniciar Sesion")}
         Text(registerString)
     }
-
-*/
 
 }
 

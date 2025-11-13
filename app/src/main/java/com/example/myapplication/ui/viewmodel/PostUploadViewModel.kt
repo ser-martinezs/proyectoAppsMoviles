@@ -10,6 +10,7 @@ import com.example.myapplication.BuildConfig
 import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.data.model.Post
 import com.example.myapplication.data.model.User
+import com.example.myapplication.data.repository.PostRepository
 import com.example.myapplication.data.service.RetroFitInstance
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +32,7 @@ data class PostUIState(
     val postResult:String = CodeConsts.NOTHING
 )
 
-class PostViewModel() :ViewModel(){
+class PostViewModel(val repository: PostRepository = PostRepository()) :ViewModel(){
     private val _state = MutableStateFlow(PostUIState())
     val state : StateFlow<PostUIState> = _state
 
@@ -71,35 +72,33 @@ class PostViewModel() :ViewModel(){
     }
 
     // TODO: fix this
-    fun postImage(postData: Post){/*
+    fun postImage(postData: Post){
+        _state.update { it.copy(postResult = CodeConsts.LOADING) }
         viewModelScope.launch {
-            _state.update { it.copy(postResult = CodeConsts.LOADING) }
+
+            var errorMsg = CodeConsts.NOTHING
             val postImage = _state.value.postBitmap
             if (postImage == null) return@launch
             val bitmapStream = ByteArrayOutputStream()
+
+            // compress image to uniform format
             try {
-                postImage.compress(Bitmap.CompressFormat.WEBP_LOSSLESS,0,bitmapStream)
+                postImage.compress(Bitmap.CompressFormat.WEBP_LOSSY,75,bitmapStream)
             } catch (e: Exception){
                 _state.update { it.copy(postResult = CodeConsts.IMAGE_ERROR) }
                 bitmapStream.close()
                 return@launch
             }
-
-            val reqBody = bitmapStream.toByteArray().toRequestBody("image/webp".toMediaTypeOrNull())
-            val imageFile: MultipartBody.Part = MultipartBody.Part.createFormData("file", "thisisgettingoverridenanywaysright", reqBody)
-
-            val safecall = async { runCatching { RetroFitInstance.postApi.uploadPost(imageFile, postData) } }.await()
-
-            if (!safecall.isSuccess) {
-                _state.update { it.copy(postResult = CodeConsts.IMAGE_ERROR) }
-                return@launch
+            try {
+                repository.uploadPost(bitmapStream,postData)
+            } catch (error: Exception){
+                errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
-            _state.update { it.copy(postResult = safecall.getOrNull()!!.code())}
-
+            _state.update { it.copy(postResult = errorMsg) }
+            
             bitmapStream.close()
-        }
-        */
 
+        }
     }
 
     fun resetSendState(){
