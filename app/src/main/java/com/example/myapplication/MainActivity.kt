@@ -1,6 +1,7 @@
 package com.example.myapplication
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -32,11 +33,11 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 import com.example.myapplication.comoponents.LoginResquestMessage
 import com.example.myapplication.data.local.CredentialRepository
-import com.example.myapplication.ui.screens.TodoScreen
 import com.example.myapplication.ui.viewmodel.HomeScreenViewModel
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 import com.example.myapplication.ui.viewmodel.ProfileViewModel
 import com.example.myapplication.ui.viewmodel.UserViewModel
+import com.example.myapplication.ui.viewmodel.UserViewModelFactory
 import kotlinx.coroutines.flow.collect
 import java.lang.Exception
 import kotlin.math.log
@@ -77,13 +78,17 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun App() {
+
+    var credentialRepo = CredentialRepository(LocalContext.current)
     val homeScreenViewModel : HomeScreenViewModel = viewModel()
-    val userViewModel : UserViewModel = viewModel()
+    val userViewModel : UserViewModel = viewModel(factory = UserViewModelFactory(credentialRepo))
+
     val postViewModel: PostViewModel = viewModel()
     val navController = rememberNavController()
-
     val bottomItems = listOf(BottomNavItem.Home, BottomNavItem.Upload, BottomNavItem.Profile)
     val loginState by userViewModel.state.collectAsState()
+    //credentialRepo.dataFlow.collect()
+
 
 
 
@@ -100,6 +105,7 @@ fun App() {
                 homeScreenViewModel.reload()
                 HomeScreen(navController,homeScreenViewModel)
             }
+
             composable(
                 route = Routes.PROFILE,
                 arguments = listOf(navArgument("id") { nullable = true })
@@ -117,9 +123,9 @@ fun App() {
                     }
                     profileID = loginState.user!!.userID
                 }
-
                 ProfileScreen(navController, userID = profileID)
             }
+
             composable(Routes.UPLOAD) {
 
                 if (loginState.user == null) {
@@ -127,7 +133,6 @@ fun App() {
                     return@composable
                 }
                 LoadImageScreen(navController, postViewModel)
-                TodoScreen()
             }
 
             composable(

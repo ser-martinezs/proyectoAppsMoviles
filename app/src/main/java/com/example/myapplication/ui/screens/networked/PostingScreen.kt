@@ -47,12 +47,19 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
         return
     }
     if (state.postResult == CodeConsts.SUCCESS){
-        viewModel.resetSendState()
-        ErrorDialog({navController.navigate(Routes.HOME)},"Se pudo subir el post")
+        ErrorDialog({
+            navController.navigate(Routes.HOME)
+            viewModel.resetSendState()
+        },"Se pudo subir el post")
+
+        return
     }
     else if (!state.postResult.isBlank()){
-        viewModel.resetSendState()
-        ErrorDialog({navController.navigate(Routes.HOME)},state.postResult)
+        ErrorDialog({
+            navController.navigate(Routes.HOME)
+            viewModel.resetSendState()
+        },state.postResult)
+        return
     }
 
 
@@ -98,7 +105,7 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
 
     ) {
 
-            innerPadding ->
+        innerPadding ->
         if (image != null) {
             Image(
                 bitmap = image.asImageBitmap(), null,
@@ -109,4 +116,5 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
 
     }
 
+    Text(state.postResult)
 }

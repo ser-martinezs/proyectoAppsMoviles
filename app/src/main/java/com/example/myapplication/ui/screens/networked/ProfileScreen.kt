@@ -45,6 +45,7 @@ fun ProfileScreen(
     }
     if (state.responses.userResponse.isNotEmpty()) {
         FullScreenNetError(state.responses.userResponse)
+
         return
     }
 

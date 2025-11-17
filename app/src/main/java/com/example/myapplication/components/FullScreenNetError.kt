@@ -1,5 +1,6 @@
 package com.example.myapplication.components
 
+import android.widget.Button
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,7 @@ import com.example.myapplication.ui.theme.Typography
 
 @Composable
 fun FullScreenNetError(errorMSG : String="no puso un error aca equisde"){
+
     Column(modifier = Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
         Text(errorMSG, style = Typography.headlineLarge)
     }

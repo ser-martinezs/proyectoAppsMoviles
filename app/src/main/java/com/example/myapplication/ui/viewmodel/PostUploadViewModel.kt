@@ -102,7 +102,7 @@ class PostViewModel(val repository: PostRepository = PostRepository()) :ViewMode
     }
 
     fun resetSendState(){
-        //_state.update { it.copy(postResult = CodeConsts.NOTHING) }
+        _state.update { PostUIState() }
     }
 
 
