@@ -58,21 +58,6 @@ fun LoginScreen(navController: NavController,viewmodel: UserViewModel){
         return
     }
 
-    /*
-    if (state.error.isNotEmpty()){
-        ErrorDialog({viewmodel.resetState()},state.error)
-        return
-    }
-    if (state.responseCode == CodeConsts.CONNECTION_ERROR){
-        ErrorDialog({viewmodel.resetState()},"Hubo un problema para conectarse con el servidor")
-        return
-    }
-    if (state.responseCode == 401){
-        ErrorDialog({viewmodel.resetState()},"Credenciales incorrectas.")
-        return
-    }*/
-
-
     if (state.user != null) {
         navController.popBackStack()
         return

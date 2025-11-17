@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -30,11 +31,13 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 
 import com.example.myapplication.comoponents.LoginResquestMessage
+import com.example.myapplication.data.local.CredentialRepository
 import com.example.myapplication.ui.screens.TodoScreen
 import com.example.myapplication.ui.viewmodel.HomeScreenViewModel
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 import com.example.myapplication.ui.viewmodel.ProfileViewModel
 import com.example.myapplication.ui.viewmodel.UserViewModel
+import kotlinx.coroutines.flow.collect
 import java.lang.Exception
 import kotlin.math.log
 
@@ -74,15 +77,14 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun App() {
-
     val homeScreenViewModel : HomeScreenViewModel = viewModel()
     val userViewModel : UserViewModel = viewModel()
     val postViewModel: PostViewModel = viewModel()
-
     val navController = rememberNavController()
 
     val bottomItems = listOf(BottomNavItem.Home, BottomNavItem.Upload, BottomNavItem.Profile)
     val loginState by userViewModel.state.collectAsState()
+
 
 
     Scaffold(
@@ -95,6 +97,7 @@ fun App() {
         ) {
             // TODO: reload home on posting / let users #reload manually
             composable(Routes.HOME) {
+                homeScreenViewModel.reload()
                 HomeScreen(navController,homeScreenViewModel)
             }
             composable(
@@ -138,7 +141,6 @@ fun App() {
 
             }
             composable(route = Routes.POST) {
-                TodoScreen()
                 if (loginState.user == null) {
                     LoginResquestMessage(navController)
                     return@composable
@@ -153,7 +155,6 @@ fun App() {
             composable(Routes.REGISTER) {
                 postViewModel.setBitmap(null)
                 RegisterScreen(navController,userViewModel)
-
             }
         }
     }

@@ -15,7 +15,7 @@ class CustomClient : OkHttpClient(){
 }
 
 object RetroFitInstance {
-    private const val SERVER_LOCATION = "http://10.0.2.2:8080"
+    private const val SERVER_LOCATION = "https://apiforthatonething.onrender.com"
     const val IMAGE_LINK = "${SERVER_LOCATION}/images/" // gonna get a proper url soon
 
 

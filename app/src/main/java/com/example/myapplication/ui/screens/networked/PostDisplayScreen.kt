@@ -82,13 +82,11 @@ fun PostDisplayScreen(
     if (state.post?.postID != id && state.error.isEmpty())
     {
         viewmodel.fetchPost(id)
-        Log.println(Log.INFO,"PostDisplayScreen",state.error)
-        return
     }
 
 
 
-    if (state.error == CodeConsts.LOADING){
+    if (state.error == CodeConsts.LOADING || state.post == null){
         FullScreenLoading()
         return
     }

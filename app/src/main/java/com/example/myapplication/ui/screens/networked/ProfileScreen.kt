@@ -32,21 +32,19 @@ fun ProfileScreen(
 
     val state by viewModel.state.collectAsState()
 
-    viewModel.loadUser(userID)
-    viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+    if (state.user?.userID != userID && state.responses.userResponse.isEmpty()){
+        viewModel.loadUser(userID)
+        viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+    }
 
 
     // what the fuck?? 12-11-2025
-    if (state.responses.userResponse == CodeConsts.LOADING){
+    if (state.responses.userResponse == CodeConsts.LOADING || state.user == null){
         FullScreenLoading()
         return
     }
     if (state.responses.userResponse.isNotEmpty()) {
         FullScreenNetError(state.responses.userResponse)
-        return
-    }
-    if (state.user == null){
-        FullScreenNetError("no se pudo cargar el usuario :/")
         return
     }
 

@@ -41,10 +41,6 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
     val image: Bitmap?= state.postBitmap
     val errors = state.postTitle.isEmpty() || image == null
 
-    Log.println(Log.INFO,"shit posting screen thing",state.postResult.toString())
-
-
-    if (state.postResult== CodeConsts.CONNECTION_ERROR){ FullScreenNetError();return }
 
     if (state.postResult == CodeConsts.LOADING){
         FullScreenLoading()
@@ -54,6 +50,11 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
         viewModel.resetSendState()
         ErrorDialog({navController.navigate(Routes.HOME)},"Se pudo subir el post")
     }
+    else if (!state.postResult.isBlank()){
+        viewModel.resetSendState()
+        ErrorDialog({navController.navigate(Routes.HOME)},state.postResult)
+    }
+
 
 
 

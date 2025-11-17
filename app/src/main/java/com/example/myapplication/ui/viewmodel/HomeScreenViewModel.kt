@@ -68,6 +68,9 @@ class HomeScreenViewModel(val repository: PostRepository = PostRepository()) : V
         }
     }
 
+    fun reload(){
+        fetchPage(_state.value.pageNumber)
+    }
 
 
 }
