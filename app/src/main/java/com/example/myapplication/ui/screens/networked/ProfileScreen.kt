@@ -1,5 +1,6 @@
 package com.example.myapplication.ui.screens.networked
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +22,7 @@ import com.example.myapplication.components.PostContainer
 import com.example.myapplication.data.CodeConsts
 import com.example.myapplication.ui.theme.Typography
 import com.example.myapplication.ui.viewmodel.ProfileViewModel
+import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,12 +41,15 @@ fun ProfileScreen(
 
 
     // what the fuck?? 12-11-2025
-    if (state.responses.userResponse == CodeConsts.LOADING || state.user == null){
+    if (state.responses.userResponse == CodeConsts.LOADING || state.user == null || state.responses.pageResponse == CodeConsts.LOADING ){
         FullScreenLoading()
         return
     }
     if (state.responses.userResponse.isNotEmpty()) {
-        FullScreenNetError(state.responses.userResponse)
+        FullScreenNetError(state.responses.userResponse, showButton = true, onclick = {
+            viewModel.loadUser(userID)
+            viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+        })
 
         return
     }
@@ -52,8 +57,17 @@ fun ProfileScreen(
 
     Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
         Text("Posts por ${state.user!!.userName}:", style = Typography.headlineLarge)
-        PostContainer(navController,state.posts,0,0,{})
+        PostContainer(
+            navController,state.posts,0,0,
+            {
+                viewModel.loadUserPosts(userID,state.page)
+                Log.println(Log.INFO,"teto",state.responses.pageResponse)
+
+            },
+            {viewModel.loadUserPosts(userID,it)}
+        )
     }
+
 
 
 }

@@ -25,7 +25,9 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeScreenViewModel) 
         return
     }
     if (state.error.isNotEmpty()){
-        FullScreenNetError(state.error)
+        FullScreenNetError(state.error, showButton = true, onclick = {
+            homeViewModel.reload()
+        })
         return
     }
 
@@ -34,7 +36,8 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeScreenViewModel) 
         state.page,
         state.pageNumber,
         state.pageCount,
-        {homeViewModel.fetchPage(it)},
+        {homeViewModel.fetchPage(state.pageNumber)},
+        {homeViewModel.fetchPage(it)}
     )
 
 }

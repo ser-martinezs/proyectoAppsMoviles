@@ -20,12 +20,11 @@ class CredentialRepository(private val context: Context) {
         private val PASSWORD = stringPreferencesKey("password")
     }
 
-    val UserFlow: Flow<Long?> = context.dataStore.data.map { prefs -> prefs[USER_ID] }
+    val passwordFlow: Flow<String?> = context.dataStore.data.map { prefs -> prefs[PASSWORD] }
 
-    val PasswordFlow: Flow<String?> = context.dataStore.data.map { prefs -> prefs[PASSWORD] }
+    val userFlow: Flow<Long?> = context.dataStore.data.map { prefs -> prefs[USER_ID] }
 
-
-    suspend fun saveID(id: Long) {
+    suspend fun saveUserID(id: Long) {
         context.dataStore.edit { prefs -> prefs[USER_ID] = id }
     }
 

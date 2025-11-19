@@ -52,7 +52,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            val imageViewModel : PostReadViewModel = viewModel()
             MyApplicationTheme {
                 App()
             }
@@ -70,20 +69,18 @@ class MainActivity : ComponentActivity() {
                 catch (e: Exception){}
 
             }
-
     }
-
 }
 
 
 @Composable
-fun App() {
+fun App(
+    repo :CredentialRepository=CredentialRepository(LocalContext.current),
+    homeScreenViewModel : HomeScreenViewModel = viewModel(),
+    postViewModel: PostViewModel = viewModel(),
+    userViewModel : UserViewModel = viewModel(factory = UserViewModelFactory(repo))
+) {
 
-    var credentialRepo = CredentialRepository(LocalContext.current)
-    val homeScreenViewModel : HomeScreenViewModel = viewModel()
-    val userViewModel : UserViewModel = viewModel(factory = UserViewModelFactory(credentialRepo))
-
-    val postViewModel: PostViewModel = viewModel()
     val navController = rememberNavController()
     val bottomItems = listOf(BottomNavItem.Home, BottomNavItem.Upload, BottomNavItem.Profile)
     val loginState by userViewModel.state.collectAsState()
@@ -102,7 +99,6 @@ fun App() {
         ) {
             // TODO: reload home on posting / let users #reload manually
             composable(Routes.HOME) {
-                homeScreenViewModel.reload()
                 HomeScreen(navController,homeScreenViewModel)
             }
 

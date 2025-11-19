@@ -57,7 +57,7 @@ class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val post
     }
 
     fun loadUserPosts(userID: Long, pageNumber: Int){
-        _state.update { it.copy(responses = ProfileResponseCodes(pageResponse = CodeConsts.LOADING)) }
+        _state.update { it.copy(responses = it.responses.copy(pageResponse = CodeConsts.LOADING)) }
 
         viewModelScope.launch {
             var posts :List<Post> = listOf()
@@ -69,19 +69,7 @@ class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val post
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
-            _state.update { it.copy( posts = (posts), responses = ProfileResponseCodes(pageResponse = errorMsg)) }
-
-
-            /*
-            val safecall = async { runCatching { RetroFitInstance.postApi.getUserPostsByPage(userID,pageNumber) } }.await()
-
-            if (!safecall.isSuccess) {
-                _state.update { it.copy( responses = ProfileResponseCodes(pageResponse = CodeConsts.CONNECTION_ERROR)) }
-                return@launch
-            }*/
-
-            //val response = safecall.getOrNull()
-            //_state.update { it.copy( posts = (response!!.body() ?: listOf()), responses = ProfileResponseCodes(pageResponse = response.code(), userResponse = it.responses.userResponse),user = it.user ) }
+            _state.update { it.copy( posts = (posts), responses = it.responses.copy(pageResponse = errorMsg)) }
 
         }
 

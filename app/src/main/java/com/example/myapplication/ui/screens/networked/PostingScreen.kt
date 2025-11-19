@@ -35,7 +35,7 @@ import com.example.myapplication.ui.viewmodel.PostViewModel
 
 
 @Composable
-fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavController){
+fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavController,onPosted:()-> Unit={}){
 
     val state by viewModel.state.collectAsState()
     val image: Bitmap?= state.postBitmap
@@ -47,19 +47,13 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
         return
     }
     if (state.postResult == CodeConsts.SUCCESS){
-        ErrorDialog({
-            navController.navigate(Routes.HOME)
-            viewModel.resetSendState()
-        },"Se pudo subir el post")
 
-        return
+        ErrorDialog({navController.navigate(Routes.HOME);viewModel.resetSendState()},"Se pudo subir el post")
+        onPosted()
     }
     else if (!state.postResult.isBlank()){
-        ErrorDialog({
-            navController.navigate(Routes.HOME)
-            viewModel.resetSendState()
-        },state.postResult)
-        return
+
+        ErrorDialog({},state.postResult)
     }
 
 
@@ -96,9 +90,9 @@ fun PostingScreen(viewModel: PostViewModel, curUser: User,navController: NavCont
                             postedBy = curUser,
                             postID = -1,
                             postTitle = state.postTitle,
-                            postDescription = state.postDesc
-                        )
+                            postDescription = state.postDesc)
                     )
+
                 }, enabled = !errors, modifier = Modifier.fillMaxWidth()) { Text("Subir Post") }
             }
         }

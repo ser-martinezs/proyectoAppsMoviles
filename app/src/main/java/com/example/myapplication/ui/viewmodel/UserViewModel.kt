@@ -2,6 +2,7 @@ package com.example.myapplication.ui.viewmodel
 
 import android.util.Log
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.VIEW_MODEL_STORE_OWNER_KEY
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.CodeConsts
@@ -9,6 +10,7 @@ import com.example.myapplication.data.local.CredentialRepository
 import com.example.myapplication.data.model.User
 import com.example.myapplication.data.repository.UserRepository
 import com.example.myapplication.data.service.RetroFitInstance
+import com.example.myapplication.ui.screens.networked.LoginScreen
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -28,9 +30,21 @@ class UserViewModel(val repository: UserRepository = UserRepository(),val creden
     val state : StateFlow<UserViewModelState> = _state
 
     init {
+        var attempt = 0
         viewModelScope.launch {
-            var id : Long = credentialRepository.UserFlow.first()?:-1
-            var password : String = credentialRepository.PasswordFlow.first()?:""
+            Log.println(Log.INFO,"tst",_state.value.user.toString())
+            while (_state.value.user == null){
+                val id = credentialRepository.userFlow.first()?:-1L
+                val password = credentialRepository.passwordFlow.first()?:""
+
+                if (id == -1L || password.isEmpty()){ return@launch }
+                if (_state.value.error == "HTTP 401") return@launch
+
+                Log.println(Log.INFO,"Login Attempt",attempt++.toString())
+                async { tryLogin(User(userID = id, passwordHash = password, userName = "", email = "")) }
+            }
+        }
+    }
 
 
             if (id != -1L && password.isNotEmpty()) {
@@ -50,6 +64,8 @@ class UserViewModel(val repository: UserRepository = UserRepository(),val creden
 
             try {
                 user = repository.login(credentials)
+                credentialRepository.saveUserID(user.userID)
+                credentialRepository.savePassword(user.passwordHash)
             }catch (error: Exception){
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
@@ -71,6 +87,9 @@ class UserViewModel(val repository: UserRepository = UserRepository(),val creden
 
             try {
                 user = repository.register(credentials)
+                credentialRepository.saveUserID(user.userID)
+                credentialRepository.savePassword(user.passwordHash)
+
             }catch (error: Exception){
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR

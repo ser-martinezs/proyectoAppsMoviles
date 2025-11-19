@@ -92,7 +92,7 @@ fun PostDisplayScreen(
     }
 
     if (state.error.isNotEmpty()) {
-        FullScreenNetError(state.error)
+        FullScreenNetError(state.error, showButton = true, onclick = { viewmodel.fetchPost(id) })
         return
     }
 
