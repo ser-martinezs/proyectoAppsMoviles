@@ -6,53 +6,69 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.example.myapplication.data.local.CredentialRepository.Companion.PASSWORD
+import com.example.myapplication.data.local.CredentialRepository.Companion.USER_ID
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 
 val Context.dataStore by preferencesDataStore("user_prefs")
 
+abstract class IdkCredentialRepository{
+    abstract suspend fun saveUserID(id: Long)
+    abstract suspend fun savePassword(password: String)
+    abstract suspend fun getID(): Long
+    abstract suspend fun getPassword(): String
+    abstract suspend fun clearSession()
+}
 
-class CredentialRepository(private val context: Context) {
+class CredentialRepository(private val context: Context) : IdkCredentialRepository(){
     companion object {
         private val USER_ID = longPreferencesKey("user_id")
         private val PASSWORD = stringPreferencesKey("password")
     }
 
-    val passwordFlow: Flow<String?> = context.dataStore.data.map { prefs -> prefs[PASSWORD] }
+    private val passwordFlow: Flow<String?> = context.dataStore.data.map { prefs -> prefs[PASSWORD] }
+    private val userFlow: Flow<Long?> = context.dataStore.data.map { prefs -> prefs[USER_ID] }
 
-    val userFlow: Flow<Long?> = context.dataStore.data.map { prefs -> prefs[USER_ID] }
-
-    suspend fun saveUserID(id: Long) {
+    override suspend fun saveUserID(id: Long) {
         context.dataStore.edit { prefs -> prefs[USER_ID] = id }
     }
-
-    suspend fun savePassword(password: String) {
+    override suspend fun savePassword(password: String) {
         context.dataStore.edit { prefs -> prefs[PASSWORD] = password }
     }
-    suspend fun getID(): Long{
-        var id :Long= -1;
-        userFlow.collect{storedID ->
-            id = storedID ?: -1
-        }
-        return id;
+    override suspend fun getID(): Long{
+        return userFlow.first()?:-1L
     }
-    suspend fun getPassword(): String{
-        var pass :String= "";
-        passwordFlow.collect{storedPass ->
-            pass = storedPass ?: ""
-        }
-        return pass;
+    override suspend fun getPassword(): String{
+        return passwordFlow.first()?:""
     }
 
-    suspend fun clearSession() {
+    override suspend fun clearSession() {
         context.dataStore.edit { prefs ->
             prefs.remove(USER_ID)
             prefs.remove(PASSWORD)
         }
+    }
+}
 
+class TestableCredentialRepository() : IdkCredentialRepository(){
+    private var password :String? = null
+    private var user : Long? = null
+
+    override suspend fun saveUserID(id: Long) {user=id}
+    override suspend fun savePassword(password: String) {this.password=password }
+    override suspend fun getID(): Long{
+        return user?:-1L
+    }
+    override suspend fun getPassword(): String{
+        return password?:""
     }
 
-
+    override suspend fun clearSession() {
+        user=null
+        password=null
+    }
 }

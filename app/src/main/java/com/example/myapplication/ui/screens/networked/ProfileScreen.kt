@@ -34,14 +34,27 @@ fun ProfileScreen(
 
     val state by viewModel.state.collectAsState()
 
-    if (state.user?.userID != userID && state.responses.userResponse.isEmpty()){
+    if (state.user?.userID != userID && state.responses.userResponse.isEmpty()  ){
         viewModel.loadUser(userID)
         viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+
+    }
+
+    if (state.pageCount == -1 && state.responses.pageCountResponse.isEmpty()){
+        viewModel.fetchPageCount()
     }
 
 
+
     // what the fuck?? 12-11-2025
-    if (state.responses.userResponse == CodeConsts.LOADING || state.user == null || state.responses.pageResponse == CodeConsts.LOADING ){
+    if (
+        state.responses.userResponse == CodeConsts.LOADING ||
+        state.responses.pageResponse == CodeConsts.LOADING ||
+        state.responses.pageCountResponse == CodeConsts.LOADING
+        )
+
+    {
+
         FullScreenLoading()
         return
     }
@@ -53,7 +66,33 @@ fun ProfileScreen(
 
         return
     }
+    if (state.responses.pageResponse.isNotEmpty()) {
+        FullScreenNetError(state.responses.pageResponse, showButton = true, onclick = {
+            viewModel.loadUser(userID)
+            viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+        })
 
+        return
+    }
+    if (state.responses.pageCountResponse.isNotEmpty()) {
+        FullScreenNetError(state.responses.pageCountResponse, showButton = true, onclick = {
+            viewModel.loadUser(userID)
+            viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+        })
+
+        return
+    }
+
+
+
+    if (state.user == null){
+        FullScreenNetError("error raro que el usuario no puede ser conseguido sin algun error??", showButton = true, onclick = {
+            viewModel.loadUser(userID)
+            viewModel.loadUserPosts(userID =userID, pageNumber = state.page)
+        })
+
+        return
+    }
 
     PostContainer(
         navController,state.posts,

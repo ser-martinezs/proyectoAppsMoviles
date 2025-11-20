@@ -34,9 +34,8 @@ class UserViewModel(val repository: UserRepository = UserRepository(),val creden
         viewModelScope.launch {
             Log.println(Log.INFO,"tst",_state.value.user.toString())
             while (_state.value.user == null){
-                val id = credentialRepository.userFlow.first()?:-1L
-                val password = credentialRepository.passwordFlow.first()?:""
-
+                val id = credentialRepository.getID()
+                val password = credentialRepository.getPassword()
                 if (id == -1L || password.isEmpty()){ return@launch }
                 if (_state.value.error == "HTTP 401") return@launch
 

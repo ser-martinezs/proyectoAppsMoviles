@@ -14,17 +14,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 data class ProfileResponseCodes(
     val userResponse : String= CodeConsts.NOTHING,
-    val pageResponse :String= CodeConsts.NOTHING
+    val pageResponse :String= CodeConsts.NOTHING,
+    val pageCountResponse : String= CodeConsts.NOTHING
 )
 data class ProfileState(
     val user : User? = null,
     val posts : List<Post> = listOf(),
     val page : Int= 0,
-    val pageCount :Int= 0,
+    val pageCount :Int= -1,
     val responses :ProfileResponseCodes= ProfileResponseCodes()
 )
 
@@ -43,16 +45,12 @@ class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val post
             var errorMsg :String = ""
             try {
                 user = userRepo.getByUserID(userID)
-              //  fetchPageCount()
             }catch (error: Exception){
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
-
-            _state.update { it.copy(responses = it.responses.copy(userResponse = errorMsg), user = user) }
-
+            _state.update {it.copy(responses = it.responses.copy(userResponse = errorMsg), user = user) }
         }
-        fetchPageCount()// bad hack/solution, will persist lol
 
     }
 
@@ -66,37 +64,36 @@ class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val post
 
             try {
                 posts = postRepo.getUserPostsByPage(userID,pageNumber)
-                fetchPageCount()
+
             }catch (error: Exception){
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
+
             _state.update { it.copy( posts = (posts), responses = it.responses.copy(pageResponse = errorMsg), page = pageNumber) }
 
         }
+        //
     }
 
     fun fetchPageCount(){
+        if (_state.value.user == null) return
         viewModelScope.launch {
-
-            var pageCount = 0
+            _state.update { it.copy(responses = it.responses.copy(pageCountResponse= CodeConsts.LOADING)) }
+            var pageCount = -1
+            var errorMsg = ""
             try {
                 pageCount = postRepo.getUserPageCount(_state.value.user!!.userID )
             }catch (error: Exception){
                 error.printStackTrace()
-
+                errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
-            _state.update { it.copy(pageCount=pageCount) }
+            _state.update { it.copy(pageCount=pageCount, responses = it.responses.copy(pageCountResponse = errorMsg)) }
         }
     }
 
     fun reload(){
         loadUserPosts(_state.value.user?.userID ?: -1,_state.value.page)
     }
-
-
-
-
-
 }
 
