@@ -55,18 +55,19 @@ fun ProfileScreen(
     }
 
 
-    Column(modifier = Modifier.fillMaxSize().padding(8.dp)) {
-        Text("Posts por ${state.user!!.userName}:", style = Typography.headlineLarge)
-        PostContainer(
-            navController,state.posts,0,0,
-            {
-                viewModel.loadUserPosts(userID,state.page)
-                Log.println(Log.INFO,"teto",state.responses.pageResponse)
-
-            },
-            {viewModel.loadUserPosts(userID,it)}
-        )
-    }
+    PostContainer(
+        navController,state.posts,
+        state.page,
+        state.pageCount,
+        {
+            viewModel.reload()
+        },
+        {
+            Log.println(Log.INFO,"pene",it.toString())
+            viewModel.loadUserPosts(userID,it)
+        },
+        {Text("Posts por ${state.user!!.userName}:", style = Typography.headlineLarge)}
+    )
 
 
 

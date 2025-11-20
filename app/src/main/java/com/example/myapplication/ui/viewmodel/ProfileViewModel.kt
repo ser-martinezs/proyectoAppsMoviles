@@ -24,6 +24,7 @@ data class ProfileState(
     val user : User? = null,
     val posts : List<Post> = listOf(),
     val page : Int= 0,
+    val pageCount :Int= 0,
     val responses :ProfileResponseCodes= ProfileResponseCodes()
 )
 
@@ -40,10 +41,9 @@ class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val post
         viewModelScope.launch {
             var user : User?= null
             var errorMsg :String = ""
-
-
             try {
                 user = userRepo.getByUserID(userID)
+              //  fetchPageCount()
             }catch (error: Exception){
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
@@ -51,12 +51,13 @@ class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val post
 
             _state.update { it.copy(responses = it.responses.copy(userResponse = errorMsg), user = user) }
 
-
         }
+        fetchPageCount()// bad hack/solution, will persist lol
 
     }
 
     fun loadUserPosts(userID: Long, pageNumber: Int){
+
         _state.update { it.copy(responses = it.responses.copy(pageResponse = CodeConsts.LOADING)) }
 
         viewModelScope.launch {
@@ -65,19 +66,37 @@ class ProfileViewModel(val userRepo: UserRepository = UserRepository(), val post
 
             try {
                 posts = postRepo.getUserPostsByPage(userID,pageNumber)
+                fetchPageCount()
             }catch (error: Exception){
                 error.printStackTrace()
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
-            _state.update { it.copy( posts = (posts), responses = it.responses.copy(pageResponse = errorMsg)) }
+            _state.update { it.copy( posts = (posts), responses = it.responses.copy(pageResponse = errorMsg), page = pageNumber) }
 
         }
-
-
-
-
-
-
     }
 
+    fun fetchPageCount(){
+        viewModelScope.launch {
+
+            var pageCount = 0
+            try {
+                pageCount = postRepo.getUserPageCount(_state.value.user!!.userID )
+            }catch (error: Exception){
+                error.printStackTrace()
+
+            }
+            _state.update { it.copy(pageCount=pageCount) }
+        }
+    }
+
+    fun reload(){
+        loadUserPosts(_state.value.user?.userID ?: -1,_state.value.page)
+    }
+
+
+
+
+
 }
+

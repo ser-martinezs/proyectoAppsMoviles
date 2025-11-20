@@ -47,15 +47,6 @@ class UserViewModel(val repository: UserRepository = UserRepository(),val creden
     }
 
 
-            if (id != -1L && password.isNotEmpty()) {
-                tryLogin(User(userID =id ,passwordHash=password, userName = "", email = ""))
-            }
-
-
-
-        }
-    }
-
     fun tryLogin(credentials: User){
         _state.update { it.copy(error = CodeConsts.LOADING) }
         viewModelScope.launch {
@@ -71,11 +62,6 @@ class UserViewModel(val repository: UserRepository = UserRepository(),val creden
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
             _state.update { it.copy(error = errorMsg, user = user) }
-            if (user != null){
-                //Log.println(Log.INFO,"nosepo","${user.email},${user.passwordHash}")
-                credentialRepository.saveID(user.userID)
-                credentialRepository.savePassword(user.passwordHash)
-            }
         }
     }
 
@@ -95,10 +81,7 @@ class UserViewModel(val repository: UserRepository = UserRepository(),val creden
                 errorMsg = error.message?:CodeConsts.UNDEFINED_ERROR
             }
             _state.update { it.copy(error = errorMsg, user = user) }
-            if (user != null){
-                credentialRepository.saveID(user.userID)
-                credentialRepository.savePassword(user.passwordHash)
-            }
+
 
         }
 

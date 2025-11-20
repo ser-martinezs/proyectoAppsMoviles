@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.screens.networked
 
 import android.util.Log
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -10,6 +11,7 @@ import com.example.myapplication.components.FullScreenLoading
 import com.example.myapplication.components.FullScreenNetError
 import com.example.myapplication.components.PostContainer
 import com.example.myapplication.data.CodeConsts
+import com.example.myapplication.ui.theme.Typography
 import com.example.myapplication.ui.viewmodel.HomeScreenViewModel
 import com.example.myapplication.ui.viewmodel.PostReadViewModel
 
@@ -25,9 +27,7 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeScreenViewModel) 
         return
     }
     if (state.error.isNotEmpty()){
-        FullScreenNetError(state.error, showButton = true, onclick = {
-            homeViewModel.reload()
-        })
+        FullScreenNetError(state.error, showButton = true, onclick = { homeViewModel.reload()})
         return
     }
 
@@ -37,7 +37,8 @@ fun HomeScreen(navController: NavController,homeViewModel: HomeScreenViewModel) 
         state.pageNumber,
         state.pageCount,
         {homeViewModel.fetchPage(state.pageNumber)},
-        {homeViewModel.fetchPage(it)}
+        {homeViewModel.fetchPage(it)},
+        {Text("", style = Typography.headlineLarge)}
     )
 
 }

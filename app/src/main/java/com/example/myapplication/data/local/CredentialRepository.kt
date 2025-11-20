@@ -33,14 +33,14 @@ class CredentialRepository(private val context: Context) {
     }
     suspend fun getID(): Long{
         var id :Long= -1;
-        UserFlow.collect{storedID ->
+        userFlow.collect{storedID ->
             id = storedID ?: -1
         }
         return id;
     }
     suspend fun getPassword(): String{
         var pass :String= "";
-        PasswordFlow.collect{storedPass ->
+        passwordFlow.collect{storedPass ->
             pass = storedPass ?: ""
         }
         return pass;
